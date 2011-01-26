@@ -9,13 +9,13 @@ In this tutorial I tried to explain how you can use *web.go*,
 * Basic knowledge about HTML and HTTP.
 * Knowledge about MySQL and mysql command-line tool.
 * MySQL account with permissions to create tables.
-* Last version of Go compiler - [see Go homepage](http://golang.org/doc/install.html)
+* Last version of Go compiler - see [Go homepage](http://golang.org/doc/install.html)
 
 ## Database
 
 Let's start by creating a definition of the article in the database.
 
-If you have got your own MySQL server installation, you have full privileges to
+If you have your own MySQL server installation, you have full privileges to
 it. In this case, you can create a separate database for this example:
 
     $ mysql -u root -p
@@ -55,8 +55,8 @@ Next we may create separate user for our application and grant him access to
     
 ## View
 
-Lets write some code in Go. To define view we use *kview* and *kasia.go*
-packages. You may install them this way:
+Lets write some code in Go. To define the application view we use *kview* and
+*kasia.go* packages. You may install them this way:
 
     $ git clone git://github.com/ziutek/kasia.go
     $ cd kasia.go && make install
@@ -71,9 +71,9 @@ Next we will create directory for our project:
     $ cd simple_go_wiki
     $ mkdir templates
 
-The *templates* will be used for our Kasia templates.
+The *templates* directory will be used for our Kasia templates.
 
-In this directory we will create our *view.go* file:
+In the *simple_go_wiki* directory we can create our *view.go* file:
 
     package main
 
@@ -101,12 +101,12 @@ In this directory we will create our *view.go* file:
     }
 
 
-You can see, that our service will consist of two pages:
+As you can see, our service will consist of two pages:
 
-* *main_view* - using which, we will be able to read articles,
-* *edit_view* - using which, we will be able to create and edit articles.
+* *main_view* - using which, an user will be able to read articles,
+* *edit_view* - using which, an user will be able to create and edit articles.
 
-Both pages will consists two columns:
+Both pages will consists of two columns:
 
 * Left - list of articles,
 * Right - column specific to the page. 
@@ -116,11 +116,11 @@ must create *layout.kt* file in *templates* directory:
 
     <!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>
     <html>
-    <head>
-        <meta http-equiv='Content-type' content='text/html; charset=utf-8'>
-        <link href='/style.css' type='text/css' rel='stylesheet'>
-        <title>Simple Wiki</title>
-    </head>
+        <head>
+            <meta http-equiv='Content-type' content='text/html; charset=utf-8'>
+            <link href='/style.css' type='text/css' rel='stylesheet'>
+            <title>Simple Wiki</title>
+        </head>
         <body>
             <div id='Container0'>
                 <div id='Container1'>
@@ -446,3 +446,7 @@ and launch it:
 If may get this application from Github:
 
     $ git git@github
+
+## Exercices
+
+Try adding to this application the ability to delete an article.
