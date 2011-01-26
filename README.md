@@ -9,7 +9,7 @@ In this tutorial I tried to explain how you can use *web.go*,
 * Basic knowledge about HTML and HTTP.
 * Knowledge about MySQL and mysql command-line tool.
 * MySQL account with permissions to create tables.
-* Last version of Go compiler - see [http://golang.org/doc/install.html]
+* Last version of Go compiler - [see Go homepage](http://golang.org/doc/install.html)
 
 ## Database
 
