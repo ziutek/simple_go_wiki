@@ -245,6 +245,11 @@ define const and declare global variables:
 After declaration, MySQL connection handler is ready for connect to the
 database. But we will not make this connection explicitly.
 
+In our application we will use the MyMySQL *autorecon* interface. This is a set
+of functions that do not require connect to the database before use them. More
+importantly, they don't need to manually reconnect in case of network error or
+MySQL server reboot.
+
 Next we will define some utility functions for MySQL errors handling:
 
     func mysqlError(err os.Error) (ret bool) {
@@ -261,10 +266,9 @@ Next we will define some utility functions for MySQL errors handling:
         }
     }
 
-In our application we will use the MyMySQL *autorecon* interface. This is a set
-of functions that do not require connect to the database before use them. More
-importantly, they don't need to manually reconnect in case of network error or
-MySQL server reboot. Lets define the initialisation function:
+
+Lets define the initialisation function. It is called once from *main* function
+and initialises our MySQL connector.
 
     func mysqlInit() {
         var err os.Error
@@ -288,7 +292,8 @@ MySQL server reboot. Lets define the initialisation function:
 
 The *Register* method registers commands for executing immediately after
 establishing the connection to the database. The *PrepareAC* prepare the
-server-side prepared statement. During the first *PrepareAC*  call the
+server-side prepared statement. *AC* suffix means that it is a function from
+MyMySQL *autorecon* interface. Therefore, during the first *PrepareAC*  call the
 connection will be established.
 
 Why do we use prepared statements instead of ordinary queries? We use them
@@ -305,7 +310,7 @@ web pages.
         articles  []*mymy.Row
     }
 
-    // Returns list of articles for article_list.kt template. We don't create
+    // Returns list of articles for list.kt template. We don't create
     // map because it is to expensive work. Instead, we provide indexes to id
     // and title fields, and raw query result.
     func getArticleList() *ArticleList {
@@ -410,8 +415,8 @@ We use *web.go* framework for binding handlers to specified URLs and HTTP
 methods. URLs are specified by regular expressions.
 
 The *show* handler, binded to *GET* method and "/(.\*)" URL scheme, is
-responsible for render the main page witch allows the user to read selected
-articles. The "/(.\*)" regular expression match any URL and return it's path
+responsible for render the main page witch allows the user to select and read
+articles. The "/(.\*)" regular expression matches any URL and returns it's path
 part as article number. So if URL looks like:
 
     http://www.simple-go-wiki.org/19
@@ -421,16 +426,18 @@ it will return "19" as an article number. If URL looks like:
     http://www.simple-go-wiki.org/edit/19
 
 it will return "edit/19" as an article number. Therefore, we must bind *edit*
-handler before *show* handler. If article number isn't a number it will be
-converted by *strconv.Atoi* to 0 which means unknown article.
+handler before *show* handler. The  article number will be converted by
+*strconv.Atoi* to integer value. If it is empty string or it isn't a number it
+will be converted to 0, which means unknown article.
 
 The *edit* handler, binded to *GET* method and "/edit/(.\*)" URL scheme, is
 responsible for edit or create new article.
 
 The *update* handler, binded to *POST* method and "/(.\*)" URL scheme, is
-responsible for update article in database. It modify an article in database
-only when user push the *Save* button on edit page. After updating the
-database this handler calls *show* handler for render the main page.
+responsible for update an article in database. It modify it in database
+only when user push the *Save* button on edit page, which is checked using
+*wr.Request.Params["submit"]* variable. After updating the database this
+handler calls *show* handler for render the main page.
 
 ## Building the application
 
