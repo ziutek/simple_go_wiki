@@ -111,7 +111,7 @@ Both pages will consists of two columns:
 * Left - list of articles,
 * Right - column specific to the page. 
 
-Lets create our first Kasia template. It will define layout of oure site. We
+Lets create our first Kasia template. It will define layout of our site. We
 must create *layout.kt* file in *templates* directory:
 
     <!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>
@@ -214,9 +214,9 @@ it:
     $ cd mymysql && make install
     $ cd ../simple_go_wiki
 
-Now, we can write oure MySQL connector. Lets create the *mysql.go* file. In
-first part of this file we import necessary packages, define const and declare
-global variables:
+Now, we can write MySQL connector for our application. Lets create the
+*mysql.go* file. In first part of this file we import necessary packages,
+define const and declare global variables:
 
     package main
 
@@ -270,6 +270,7 @@ MySQL server reboot. Lets define the initialisation function:
         db.Register("SET NAMES utf8")
 
         // Prepare server-side statements
+
         artlist_stmt, err = db.PrepareAC("SELECT id, title FROM articles")
         mysqlErrExit(err)
 
@@ -279,8 +280,7 @@ MySQL server reboot. Lets define the initialisation function:
         mysqlErrExit(err)
 
         update_stmt, err = db.Prepare(
-            "INSERT articles (id, title, body) VALUES (?, ?, ?)" +
-            " ON DUPLICATE KEY UPDATE title=VALUES(title), body=VALUES(body)",
+            "INSERT articles (id, title, body) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE title=VALUES(title), body=VALUES(body)",
         )
         mysqlErrExit(err)
     }
