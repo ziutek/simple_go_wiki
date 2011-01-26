@@ -1,6 +1,6 @@
-# How to write database driven web application using Go
+# How to write database-driven Web application using Go
 
-In this tutorial, I tried to explain how you can use *web.go*,
+In this tutorial I tried to explain how you can use *web.go*,
 *kview*/*kasia.go* and *mymysql* together to write a simple database driven web application. As usual, the example application will be a simple Wiki.
 
 ## Prerequisites
