@@ -199,6 +199,9 @@ At the end, lets create *edit.kt*:
 
 I think that there is nothing to comment here.
 
+We need a style sheet to set the appearance of our website. You can find it in
+*static/style.css* file. 
+
 ## Communication with MySQL server
 
 For communication with the MySQL server we use *MyMySQL* package. Lets install
