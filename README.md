@@ -151,12 +151,12 @@ Next we will create *list.kt* which will be rendered in *Left* div.
     $end
     </ul>
 
-This simple template will print *New article* URL and the list of URLs to
+This simple template prints *New article* URL and the list of URLs to
 articles stored in the database.
 
 As you can see it uses *for* statement to iterate over *articles* list. For each
 item, it uses *art.Data[id]* variable to create relative URL, and
-*art.Data[title]* variable to render the title of the article. *id* and *title*
+*art.Data[title]* variable to print the title of the article. *id* and *title*
 are also variables. They will contain indexes to the appropriate item in *Data*
 slice. *art.Data* will contain the raw row fetched from the MySQL database.
 
@@ -180,23 +180,24 @@ Lets create *show.kt* which will be template for rendering articles:
         </ul>
     $end
 
-As you can see it uses *if*/*else* statement to check that 0 item of the context
-stack is *nil* or not *nil*. This item is the *right* variable which we pass to
-the *Right.Render* method. If it isn't *nil* there is article selected and we
-can render *title* and *body* variables. Otherwise we print an alternative text.
+As you can see it uses *if* / *else* statement to determine that 0 item of the
+context stack is *nil* or not *nil*. This item is the *right* variable which we
+pass to the *Right.Render* method. If it isn't *nil* there is article selected
+and we can render *title* and *body* variables. Otherwise we print an
+alternative text.
 
 At the end, lets create *edit.kt*:
 
-<form action='/$id' method='post'>
-  <div>
-    <input name='title' value='$title'>
-    <textarea name='body'>$body</textarea>
-  </div>
-  <div id='Actions'>
-    <input type='submit' value='Cancel'>
-    <input type='submit' name='submit' value='Save'>
-  </div>
-</form>
+    <form action='/$id' method='post'>
+        <div>
+            <input name='title' value='$title'>
+            <textarea name='body'>$body</textarea>
+        </div>
+        <div id='Actions'>
+            <input type='submit' value='Cancel'>
+            <input type='submit' name='submit' value='Save'>
+        </div>
+    </form>
 
 I think that there is nothing to comment here.
 
