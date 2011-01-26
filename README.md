@@ -274,9 +274,7 @@ MySQL server reboot. Lets define the initialisation function:
         artlist_stmt, err = db.PrepareAC("SELECT id, title FROM articles")
         mysqlErrExit(err)
 
-        article_stmt, err = db.PrepareAC(
-            "SELECT title, body FROM articles WHERE id = ?",
-        )
+        article_stmt, err = db.PrepareAC("SELECT title, body FROM articles WHERE id = ?")
         mysqlErrExit(err)
 
         update_stmt, err = db.Prepare(
@@ -301,8 +299,8 @@ web pages.
     }
 
     // Returns list of articles for article_list.kt template. We don't create
-    // map because it is expensive work. Instead, we provide indexes to id and
-    // title fields, and raw query result.
+    // map because it is to expensive work. Instead, we provide indexes to id
+    // and title fields, and raw query result.
     func getArticleList() *ArticleList {
         rows, res, err := artlist_stmt.ExecAC()
         if mysqlError(err) {
@@ -345,7 +343,7 @@ Then define functions for getting and updating articles:
     }
 
 Last function uses MySQL *INSERT ... ON DUPLICATE KEY UPDATE* query. It inserts
-or updates article depending on whether it exists or not exists.
+or updates article depending on whether it exists or not exists in the table.
 
 ## Controller
 
@@ -397,9 +395,9 @@ interaction with the user. Lets create *controller.go* file:
 We use *web.go* framework for binding handlers to specified URLs and HTTP
 methods. URLs are specified by regular expressions.
 
-The *show* handler, binded to *GET* method and "/(.*)" URL scheme, is
+The *show* handler, binded to *GET* method and "/(.\*)" URL scheme, is
 responsible for render the main page witch allows the user to read selected
-articles. The "/(.*)" regular expression match any URL and return it's path
+articles. The "/(.\*)" regular expression match any URL and return it's path
 part as article number. So if URL looks like:
 
     http://www.simple-go-wiki.org/19
@@ -412,13 +410,13 @@ it will return "edit/19" as an article number. Therefore, we must bind *edit*
 handler before *show* handler. If article number isn't a number it will be
 converted by *strconv.Atoi* to 0 which means unknown article.
 
-The *edit* handler, binded to *GET* method and "/edit/(.*)" URL scheme, is
+The *edit* handler, binded to *GET* method and "/edit/(.\*)" URL scheme, is
 responsible for edit or create new article.
 
-The *update* handler, binded to *POST* method and "/(.*)" URL scheme, is
-responsible for update article in database. It modify article in database only
-when user push the *Save* button on edit page. After updating the database this
-handler calls *show* handler for render the main page.
+The *update* handler, binded to *POST* method and "/(.\*)" URL scheme, is
+responsible for update article in database. It modify an article in database
+only when user push the *Save* button on edit page. After updating the
+database this handler calls *show* handler for render the main page.
 
 ## Building the application
 
@@ -445,10 +443,11 @@ and launch it:
     $ ./wiki 
     2011/01/26 19:44:55 web.go serving 0.0.0.0:1111
 
-If may get this application from Github:
+You may get this tutorial and example application from Github using following
+command:
 
-    $ git git@github
+    $ git clone git://github.com/ziutek/simple_go_wiki.git
 
 ## Exercices
 
-Try adding to this application the ability to delete an article.
+Try add the ability to delete an article.

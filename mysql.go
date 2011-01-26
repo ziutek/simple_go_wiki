@@ -64,7 +64,7 @@ type ArticleList struct {
 }
 
 // Returns list of articles for list.kt template. We don't create map
-// because it is expensive work. Instead, we provide indexes to id and title
+// because it is to expensive work. Instead, we provide indexes to id and title
 // fields, and raw query result.
 func getArticleList() *ArticleList {
     rows, res, err := artlist_stmt.ExecAC()
