@@ -65,14 +65,15 @@ and *kasia.go* packages. You may install them this way:
     $ cd kview && make install
     $ cd ..
  
-Next we will create directory for our project:
+Next we will create the directory for our project:
 
     $ mkdir simple_go_wiki
     $ cd simple_go_wiki
     $ mkdir templates static
 
 The *templates* directory will be used for our Kasia templates. The *static*
-directory will be used for static files like *style.css*.
+directory will be used for static files like *style.css*.  Static files are 
+served by *web.go*.
 
 In the *simple_go_wiki* directory we can create our *view.go* file:
 
@@ -112,7 +113,7 @@ Both pages will consists of two columns:
 * Left - list of articles,
 * Right - column specific to the page. 
 
-Lets create our first Kasia template. It will define layout of our site. We
+Lets create our first Kasia template. It will define the layout of our site. We
 must create *layout.kt* file in *templates* directory:
 
     <!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>
@@ -152,10 +153,10 @@ Next we will create *list.kt* which will be rendered in *Left* div.
     $end
     </ul>
 
-This simple template prints *New article* URL and the list of URLs to
+This simple template prints the *New article* URL and the list of URLs to
 articles stored in the database.
 
-As you can see it uses *for* statement to iterate over *articles* list. For each
+As you can see it uses a *for* statement to iterate over the *articles* list. For each
 item, it uses *art.Data[id]* variable to create relative URL, and
 *art.Data[title]* variable to print the title of the article. *id* and *title*
 are also variables. They will contain indexes to the appropriate item in *Data*
@@ -181,13 +182,13 @@ Lets create *show.kt* which will be template for rendering articles:
         </ul>
     $end
 
-As you can see it uses *if* / *else* statement to determine that 0 item of the
-context stack is *nil* or not *nil*. This item is the *right* variable which we
+As you can see it uses the *if* / *else* statement to determine that element 0 of the
+context stack array is *nil* or not *nil*. This item is the *right* variable which we
 pass to the *Right.Render* method. If it isn't *nil* there is an article
-selected and we can render *title* and *body* variables. Otherwise we print an
+selected and we can render *title* and *body* variables. Otherwise we print our
 alternative text.
 
-At the end, lets create *edit.kt*:
+Finally, lets create *edit.kt*:
 
     <form action='/$id' method='post'>
         <div>
@@ -200,7 +201,7 @@ At the end, lets create *edit.kt*:
         </div>
     </form>
 
-I think that there is nothing to comment here.
+This is self explanatory.
 
 We need a style sheet to set the appearance of our website. You can find it in
 *static/style.css* file. 
@@ -215,8 +216,8 @@ it:
     $ cd mymysql && make install
     $ cd ../simple_go_wiki
 
-Now, we can write MySQL connector for our application. Lets create the
-*mysql.go* file. In first part of this file we import necessary packages,
+Now, we can write the MySQL connector for our application. Lets create the
+*mysql.go* file. In the first part of this file we import necessary packages,
 define const and declare global variables:
 
     package main
@@ -242,11 +243,11 @@ define const and declare global variables:
         // Prepared statements
         artlist_stmt, article_stmt, update_stmt *mymy.Statement
     )
-After declaration, MySQL connection handler is ready for connect to the
+After declaration, the MySQL connection handler is ready for connect to the
 database. But we will not make this connection explicitly.
 
 In our application we will use the MyMySQL *autorecon* interface. This is a set
-of functions that do not require connect to the database before use them. More
+of functions that do not require a connection to the database before using them. More
 importantly, they don't need to manually reconnect in case of network error or
 MySQL server reboot.
 
@@ -302,7 +303,7 @@ function for user input, because SQL logic and data are completely separated.
 Without use of prepared statements there is always a risk of the SQL injection
 attack.
 
-Lets write part of code that will be used to get data for left column of our
+Lets write the code that will be used to get data for left column of our
 web pages. 
 
     type ArticleList struct {
@@ -354,19 +355,19 @@ Then define functions for getting and updating articles:
         mysqlError(err)
     }
 
-Last function uses MySQL *INSERT ... ON DUPLICATE KEY UPDATE* query. It inserts
+The last function uses MySQL *INSERT ... ON DUPLICATE KEY UPDATE* query. It inserts
 or updates article depending on whether it exists or not exists in the table.
 
 ## Controller
 
-We need to instal *web.go*:
+We need to install *web.go*:
 
     $ cd ..
     $ git clone git://github.com/hoisie/web.go
     $ cd web.go && make install
     $ cd ../simple_go_wiki
 
-Next we can write the last part of our application witch is responsible for
+Next we can write the last part of our application which is responsible for
 interaction with the user. Lets create *controller.go* file:
 
     package main
@@ -430,10 +431,10 @@ handler before *show* handler. The  article number will be converted by
 *strconv.Atoi* to integer value. If it is empty string or it isn't a number it
 will be converted to 0, which means unknown article.
 
-The *edit* handler, binded to *GET* method and "/edit/(.\*)" URL scheme, is
+The *edit* handler, bound to *GET* method and "/edit/(.\*)" URL scheme, is
 responsible for edit or create new article.
 
-The *update* handler, binded to *POST* method and "/(.\*)" URL scheme, is
+The *update* handler, bound to *POST* method and "/(.\*)" URL scheme, is
 responsible for update an article in database. It modify it in database
 only when user push the *Save* button on edit page, which is checked using
 *wr.Request.Params["submit"]* variable. After updating the database this
@@ -464,11 +465,11 @@ and launch it:
     $ ./wiki 
     2011/01/26 19:44:55 web.go serving 0.0.0.0:1111
 
-You may get this tutorial and example application from Github using following
+You may get this tutorial and example application from Github using the following
 command:
 
     $ git clone git://github.com/ziutek/simple_go_wiki.git
 
 ## Exercices
 
-Try add the ability to delete an article.
+Try to add the ability to delete an article.
