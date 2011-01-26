@@ -138,7 +138,8 @@ This simple layout is responsible for:
 * render *Left* and *Right* divs (subtemplates) using the data available in
   *left* and *right* variables.
 
-The *Render* method is defined in *kview* package.
+The *Render* method is defined in *kview* package. It renders subtemplate with
+specified data in the place of its occurrence.
 
 Next we will create *list.kt* which will be rendered in *Left* div.
 
@@ -150,8 +151,8 @@ Next we will create *list.kt* which will be rendered in *Left* div.
     $end
     </ul>
 
-This simple template will be rendered to *New article* URL and to the list of
-URLs to articles stored in the database.
+This simple template will print *New article* URL and the list of URLs to
+articles stored in the database.
 
 As you can see it uses *for* statement to iterate over *articles* list. For each
 item, it uses *art.Data[id]* variable to create relative URL, and
