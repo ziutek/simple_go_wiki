@@ -47,16 +47,16 @@ Next we will create *articles* table:
 Next we may create separate user for our application and grant him access to
 *articles* table:
 
-    mysql> grant insert,update,delete on articles to testuser@localhost;
+    mysql> GRANT INSERT,UPDATE,DELETE ON articles TO testuser@localhost;
     Query OK, 0 rows affected (0.00 sec)
 
-    mysql> set password for testuser@localhost = password('TestPasswd9')
+    mysql> SET PASSWORD FOR testuser@localhost = PASSWORD('TestPasswd9')
     Query OK, 0 rows affected (0.00 sec)
     
 ## View
 
-Lets write some code in Go. To define the application view we use *kview* and
-*kasia.go* packages. You may install them this way:
+Lets write some code in Go. To define the application view we will use *kview*
+and *kasia.go* packages. You may install them this way:
 
     $ git clone git://github.com/ziutek/kasia.go
     $ cd kasia.go && make install
@@ -69,9 +69,10 @@ Next we will create directory for our project:
 
     $ mkdir simple_go_wiki
     $ cd simple_go_wiki
-    $ mkdir templates
+    $ mkdir templates static
 
-The *templates* directory will be used for our Kasia templates.
+The *templates* directory will be used for our Kasia templates. The *static*
+directory will be used for static files like *style.css*.
 
 In the *simple_go_wiki* directory we can create our *view.go* file:
 
@@ -103,8 +104,8 @@ In the *simple_go_wiki* directory we can create our *view.go* file:
 
 As you can see, our service will consist of two pages:
 
-* *main_view* - using which, an user will be able to read articles,
-* *edit_view* - using which, an user will be able to create and edit articles.
+* *main_view* - using which the user will be able to read articles,
+* *edit_view* - using which the user will be able to create and edit articles.
 
 Both pages will consists of two columns:
 
@@ -182,8 +183,8 @@ Lets create *show.kt* which will be template for rendering articles:
 
 As you can see it uses *if* / *else* statement to determine that 0 item of the
 context stack is *nil* or not *nil*. This item is the *right* variable which we
-pass to the *Right.Render* method. If it isn't *nil* there is article selected
-and we can render *title* and *body* variables. Otherwise we print an
+pass to the *Right.Render* method. If it isn't *nil* there is an article
+selected and we can render *title* and *body* variables. Otherwise we print an
 alternative text.
 
 At the end, lets create *edit.kt*:
@@ -241,8 +242,10 @@ define const and declare global variables:
         // Prepared statements
         artlist_stmt, article_stmt, update_stmt *mymy.Statement
     )
+After declaration, MySQL connection handler is ready for connect to the
+database. But we will not make this connection explicitly.
 
-Next we define some utility functions for MySQL errors handling:
+Next we will define some utility functions for MySQL errors handling:
 
     func mysqlError(err os.Error) (ret bool) {
         ret = (err != nil)
@@ -285,10 +288,14 @@ MySQL server reboot. Lets define the initialisation function:
 
 The *Register* method registers commands for executing immediately after
 establishing the connection to the database. The *PrepareAC* prepare the
-server-side prepared statement. We sould use prepared statements mainly for
-security reasons.  With use of prepared statements we don't need any
-escape function becouse SQL logic and data are completely separated. Without use
-of prepared statements there is always a risk of the SQL injection attack.
+server-side prepared statement. During the first *PrepareAC*  call the
+connection will be established.
+
+Why do we use prepared statements instead of ordinary queries? We use them
+mainly for security reasons. With prepared statements we don't need any escape
+function for user input, because SQL logic and data are completely separated.
+Without use of prepared statements there is always a risk of the SQL injection
+attack.
 
 Lets write part of code that will be used to get data for left column of our
 web pages. 
