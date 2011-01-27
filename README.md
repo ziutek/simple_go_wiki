@@ -361,10 +361,7 @@ or updates article depending on whether it exists or not exists in the table.
 
 We need to install *web.go*:
 
-    $ cd ..
-    $ git clone git://github.com/hoisie/web.go
-    $ cd web.go && make install
-    $ cd ../simple_go_wiki
+    $ goinstall github.com/hoisie/web.go
 
 Next we can write the last part of our application which is responsible for
 interaction with the user. Lets create *controller.go* file:
