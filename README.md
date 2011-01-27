@@ -47,7 +47,7 @@ Next we will create *articles* table:
 Next we may create separate user for our application and grant him access to
 *articles* table:
 
-    mysql> GRANT INSERT,UPDATE,DELETE ON articles TO testuser@localhost;
+    mysql> GRANT SELECT,INSERT,UPDATE,DELETE ON articles TO testuser@localhost;
     Query OK, 0 rows affected (0.00 sec)
 
     mysql> SET PASSWORD FOR testuser@localhost = PASSWORD('TestPasswd9')
