@@ -3,7 +3,7 @@ package main
 import (
     "os"
     "log"
-    "mymy"
+    mymy "github.com/ziutek/mymysql"
 )
 
 const (

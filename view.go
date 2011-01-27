@@ -1,6 +1,6 @@
 package main
 
-import "kview"
+import "github.com/ziutek/kview"
 
 // Our Wiki pages
 var main_view, edit_view kview.View

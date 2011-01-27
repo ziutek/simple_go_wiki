@@ -1,8 +1,8 @@
 package main
 
 import (
-    "web"
     "strconv"
+    "github.com/hoisie/web.go"
 )
 
 type ViewCtx struct {

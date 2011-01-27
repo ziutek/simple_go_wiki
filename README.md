@@ -58,12 +58,10 @@ Next we may create separate user for our application and grant him access to
 Lets write some code in Go. To define the application view we will use *kview*
 and *kasia.go* packages. You may install them this way:
 
-    $ git clone git://github.com/ziutek/kasia.go
-    $ cd kasia.go && make install
-    $ cd .. 
-    $ git clone git://github.com/ziutek/kview
-    $ cd kview && make install
-    $ cd ..
+    $ goinstall github.com/ziutek/kview
+
+It automatically downloads, builds and installs *kasia.go* and *kview*. You can
+find source code in *$GOROOT/src/pkg/github.com/ziutek*
  
 Next we will create the directory for our project:
 
@@ -79,7 +77,7 @@ In the *simple_go_wiki* directory we can create our *view.go* file:
 
     package main
 
-    import "kview"
+    import "github.com/ziutek/kview"
 
     // Our Wiki pages
     var main_view, edit_view kview.View
@@ -153,14 +151,15 @@ Next we will create *list.kt* which will be rendered in *Left* div.
     $end
     </ul>
 
-This simple template prints the *New article* URL and the list of URLs to
+This simple template prints the *New article* link and the list of links to
 articles stored in the database.
 
-As you can see it uses a *for* statement to iterate over the *articles* list. For each
-item, it uses *art.Data[id]* variable to create relative URL, and
-*art.Data[title]* variable to print the title of the article. *id* and *title*
-are also variables. They will contain indexes to the appropriate item in *Data*
-slice. *art.Data* will contain the raw row fetched from the MySQL database.
+As you can see it uses a *for* statement to iterate over the *articles* list
+(slice). For each item, it uses *art.Data[id]* to create relative URL, and
+*art.Data[title]* to print the title of the article. *articles*, *id* and
+*title* are members of *ArticleList* struct (defined later in this tutorial). 
+They will contain indexes to the appropriate item in *Data* slice. *art.Data*
+will contain the raw row fetched from the MySQL database.
 
 Lets create *show.kt* which will be template for rendering articles:
 
@@ -211,10 +210,7 @@ We need a style sheet to set the appearance of our website. You can find it in
 For communication with the MySQL server we use *MyMySQL* package. Lets install
 it:
 
-    $ cd ..
-    $ git clone git://github.com/ziutek/mymysql
-    $ cd mymysql && make install
-    $ cd ../simple_go_wiki
+    $ goinstall github.com/ziutek/mymysql
 
 Now, we can write the MySQL connector for our application. Lets create the
 *mysql.go* file. In the first part of this file we import necessary packages,
@@ -225,7 +221,7 @@ define const and declare global variables:
     import (
         "os"
         "log"
-        "mymy"
+        mymy "github.com/ziutek/mymysql"
     )
 
     const (
@@ -376,8 +372,8 @@ interaction with the user. Lets create *controller.go* file:
     package main
 
     import (
-        "web"
         "strconv"
+        "github.com/hoisie/web.go"
     )
 
     type ViewCtx struct {
