@@ -41,7 +41,7 @@ Next we will create *articles* table:
                 id    INT AUTO_INCREMENT PRIMARY KEY,
                 title VARCHAR(80) NOT NULL,
                 body  TEXT NOT NULL
-            );
+            ) DEFAULT CHARSET=utf8;
     Query OK, 0 rows affected (0.02 sec)
 
 Next we may create separate user for our application and grant him access to
