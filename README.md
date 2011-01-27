@@ -171,7 +171,7 @@ Lets create *show.kt* which will be template for rendering articles:
         <div id='Actions'><a href='/edit/$id'>Edit</a></div>
     $else:
         <h4>Simple Wiki</h4>
-        <p>This application was written entirely in Go language, using the
+        <p>This application was wrote entirely in Go language, using the
         following external packages:</p>
         <ul>
             <li><a href='https://github.com/hoisie/web.go'>web.go</a></li>
@@ -239,6 +239,7 @@ define const and declare global variables:
         // Prepared statements
         artlist_stmt, article_stmt, update_stmt *mymy.Statement
     )
+
 After declaration, the MySQL connection handler is ready for connect to the
 database. But we will not make this connection explicitly.
 
@@ -281,7 +282,7 @@ and initialises our MySQL connector.
         article_stmt, err = db.PrepareAC("SELECT title, body FROM articles WHERE id = ?")
         mysqlErrExit(err)
 
-        update_stmt, err = db.Prepare(
+        update_stmt, err = db.PrepareAC(
             "INSERT articles (id, title, body) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE title=VALUES(title), body=VALUES(body)",
         )
         mysqlErrExit(err)
@@ -307,9 +308,9 @@ web pages.
         articles  []*mymy.Row
     }
 
-    // Returns list of articles for list.kt template. We don't create
-    // map because it is to expensive work. Instead, we provide indexes to id
-    // and title fields, and raw query result.
+    // Returns list of articles for list.kt template. We don't create map
+    // because it is to expensive work. Instead, we provide raw query result
+    // and indexes to id and title fields.
     func getArticleList() *ArticleList {
         rows, res, err := artlist_stmt.ExecAC()
         if mysqlError(err) {
@@ -345,7 +346,7 @@ Then define functions for getting and updating articles:
         return
     }
 
-    // Insert or update an article. It return id of updated/inserted article
+    // Insert or update an article. It returns id of updated/inserted article
     func updateArticle(id int, title, body string) int {
         _, res, err := update_stmt.ExecAC(id, title, body)
         if mysqlError(err) {
@@ -354,8 +355,9 @@ Then define functions for getting and updating articles:
         return int(res.InsertId)
     }
 
-The last function uses MySQL *INSERT ... ON DUPLICATE KEY UPDATE* query. It inserts
-or updates article depending on whether it exists or not exists in the table.
+The last function uses MySQL *INSERT ... ON DUPLICATE KEY UPDATE* query. It
+inserts or updates article depending on whether it exists or not exists in the
+table.
 
 ## Controller
 

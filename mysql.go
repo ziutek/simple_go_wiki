@@ -43,6 +43,7 @@ func mysqlInit() {
     db.Register("SET NAMES utf8")
 
     // Prepare server-side statements
+
     artlist_stmt, err = db.PrepareAC("SELECT id, title FROM articles")
     mysqlErrExit(err)
 
@@ -51,7 +52,7 @@ func mysqlInit() {
     )
     mysqlErrExit(err)
 
-    update_stmt, err = db.Prepare(
+    update_stmt, err = db.PrepareAC(
         "INSERT articles (id, title, body) VALUES (?, ?, ?)" +
         " ON DUPLICATE KEY UPDATE title=VALUES(title), body=VALUES(body)",
     )
@@ -64,8 +65,8 @@ type ArticleList struct {
 }
 
 // Returns list of articles for list.kt template. We don't create map
-// because it is to expensive work. Instead, we provide indexes to id and title
-// fields, and raw query result.
+// because it is to expensive work. Instead, we provide raw query result
+// and indexes to id and title fields.
 func getArticleList() *ArticleList {
     rows, res, err := artlist_stmt.ExecAC()
     if mysqlError(err) {
@@ -99,7 +100,7 @@ func getArticle(id int) (article *Article) {
     return
 }
 
-// Insert or update an article. It return id of updated/inserted article
+// Insert or update an article. It returns id of updated/inserted article.
 func updateArticle(id int, title, body string) int {
     _, res, err := update_stmt.ExecAC(id, title, body)
     if mysqlError(err) {

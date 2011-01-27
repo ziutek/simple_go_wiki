@@ -6,7 +6,7 @@ $if [0]:
   <div id='Actions'><a href='/edit/$id'>Edit</a></div>
 $else:
   <h4>Simple Wiki</h4>
-  <p>This application was written entirely in Go language, using the following
+  <p>This application was wrote entirely in Go language, using the following
   external packages:</p>
   <ul>
     <li><a href='https://github.com/hoisie/web.go'>web.go</a></li>
