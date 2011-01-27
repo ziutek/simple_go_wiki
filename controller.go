@@ -25,8 +25,14 @@ func edit(wr *web.Context, art_num string) {
 func update(wr *web.Context, art_num string) {
     if wr.Request.Params["submit"] == "Save" {
         id, _ := strconv.Atoi(art_num) // id == 0 means new article
-        updateArticle(id, wr.Request.Params["title"], wr.Request.Params["body"])
+        id = updateArticle(
+            id, wr.Request.Params["title"], wr.Request.Params["body"],
+        )
+        // If we insert new article, we change art_num to its id. This allows
+        // show the article immediately after its creation.
+        art_num = strconv.Itoa(id)
     }
+    // Show modified/created article
     show(wr, art_num)
 }
 

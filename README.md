@@ -349,10 +349,13 @@ Then define functions for getting and updating articles:
         return
     }
 
-    // Insert or update an article
-    func updateArticle(id int, title, body string) {
-        _, _, err := update_stmt.ExecAC(id, title, body)
-        mysqlError(err)
+    // Insert or update an article. It return id of updated/inserted article
+    func updateArticle(id int, title, body string) int {
+        _, res, err := update_stmt.ExecAC(id, title, body)
+        if mysqlError(err) {
+            return 0
+        }
+        return int(res.InsertId)
     }
 
 The last function uses MySQL *INSERT ... ON DUPLICATE KEY UPDATE* query. It inserts
@@ -397,10 +400,17 @@ interaction with the user. Lets create *controller.go* file:
     func update(wr *web.Context, art_num string) {
         if wr.Request.Params["submit"] == "Save" {
             id, _ := strconv.Atoi(art_num) // id == 0 means new article
-            updateArticle(id, wr.Request.Params["title"], wr.Request.Params["body"])
+            id = updateArticle(
+                id, wr.Request.Params["title"], wr.Request.Params["body"],
+            )
+            // If we insert new article, we change art_num to its id. This allows
+            // show the article immediately after its creation.
+            art_num = strconv.Itoa(id)
         }
+        // Show modified/created article
         show(wr, art_num)
     }
+
 
     func main() {
         viewInit()

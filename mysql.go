@@ -99,8 +99,11 @@ func getArticle(id int) (article *Article) {
     return
 }
 
-// Insert or update an article
-func updateArticle(id int, title, body string) {
-    _, _, err := update_stmt.ExecAC(id, title, body)
-   mysqlError(err)
+// Insert or update an article. It return id of updated/inserted article
+func updateArticle(id int, title, body string) int {
+    _, res, err := update_stmt.ExecAC(id, title, body)
+    if mysqlError(err) {
+        return 0
+    }
+    return int(res.InsertId)
 }
