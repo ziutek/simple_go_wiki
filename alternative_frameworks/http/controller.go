@@ -38,6 +38,7 @@ func update(wr http.ResponseWriter, req *http.Request, art_num string) {
     show(wr, art_num)
 }
 
+// Decide which handler to use basis on the request method and URL path.
 func router(wr http.ResponseWriter, req *http.Request) {
     root_path  := "/"
     edit_path  := "/edit/"
@@ -51,10 +52,8 @@ func router(wr http.ResponseWriter, req *http.Request) {
         case strings.HasPrefix(req.URL.Path, edit_path):
             edit(wr, req.URL.Path[len(edit_path):])
 
-
         case strings.HasPrefix(req.URL.Path, root_path):
             show(wr, req.URL.Path[len(root_path):])
-
         }
 
     case "POST":
