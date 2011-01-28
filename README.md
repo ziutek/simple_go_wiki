@@ -138,8 +138,10 @@ This simple layout is responsible for:
 * render *Left* and *Right* divs (subtemplates) using the data available in
   *left* and *right* variables.
 
-The *Render* method is defined in *kview* package. It renders subtemplate with
-specified data in the place of its occurrence.
+The *Render* method is defined in *kview* package. It renders subview with
+specified data in the place of its occurrence. This subview can have its own
+divs and can render another subviews (but we don't use this property in our
+simple Wiki).
 
 Next we will create *list.kt* which will be rendered in *Left* div.
 
@@ -160,6 +162,19 @@ As you can see it uses a *for* statement to iterate over the *articles* list
 *title* are members of *ArticleList* struct (defined later in this tutorial). 
 They will contain indexes to the appropriate item in *Data* slice. *art.Data*
 will contain the raw row fetched from the MySQL database.
+
+*for* statement create two variables (*_* and *art*) in the local context.
+First is the iteration number, second is the list element. We don't use
+iteration number in our example but it may be useful:
+
+    $for nn+, art in articles:
+        <div class='$if even(nn):Even$else:Odd$end'>
+            $nn. <a href='$art.Data[id]'>$art.Data[title]</a>
+        </div>
+    $end
+
+To make this work we need to provide *even(int)* function in context stack. '+'
+after *nn* means that we counts from 1, not from 0.
 
 Lets create *show.kt* which will be template for rendering articles:
 
@@ -479,7 +494,10 @@ command:
 
 There are versions of *controller.go* file for Go builtin *http* package and
 [twister](https://github.com/garyburd/twister) package. You can find them in
-*alternative_frameworks* directory.
+*alternative_frameworks* directory. If you want to try *twister* version, you
+need to instal *twister* server:
+
+    goinstall github.com/garyburd/twister/server
 
 ## Exercices
 
