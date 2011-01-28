@@ -41,17 +41,16 @@ func update(wr http.ResponseWriter, req *http.Request, art_num string) {
 func router(wr http.ResponseWriter, req *http.Request) {
     root_path  := "/"
     edit_path  := "/edit/"
-    style_path := "/style.css"
 
     switch req.Method {
     case "GET":
         switch {
+        case req.URL.Path == "/style.css":
+            http.ServeFile(wr, req, "static" + req.URL.Path)
+
         case strings.HasPrefix(req.URL.Path, edit_path):
             edit(wr, req.URL.Path[len(edit_path):])
 
-        case strings.HasPrefix(req.URL.Path, style_path):
-            log.Println(req.Method, req.URL.Path)
-            http.ServeFile(wr, req, "static" + req.URL.Path)
 
         case strings.HasPrefix(req.URL.Path, root_path):
             show(wr, req.URL.Path[len(root_path):])
