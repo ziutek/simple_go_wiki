@@ -475,6 +475,12 @@ command:
 
     $ git clone git://github.com/ziutek/simple_go_wiki.git
 
+## Other frameworks
+
+There are versions of *controller.go* file for Go builtin *http* package and
+[twister](https://github.com/garyburd/twister) package. You can find them in
+*alternative_frameworks* directory.
+
 ## Exercices
 
 Try to add the ability to delete an article.
