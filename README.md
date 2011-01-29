@@ -160,8 +160,8 @@ As you can see it uses a *for* statement to iterate over the *articles* list
 (slice). For each item, it uses *art.Data[id]* to create relative URL, and
 *art.Data[title]* to print the title of the article. *articles*, *id* and
 *title* are members of *ArticleList* struct (defined later in this tutorial). 
-They will contain indexes to the appropriate item in *Data* slice. *art.Data*
-will contain the raw row fetched from the MySQL database.
+*id* and *title* will contain indexes to the appropriate item in *Data* slice,
+*art.Data* will contain the raw row fetched from the MySQL database.
 
 *for* statement create two variables (*_* and *art*) in the local context.
 First is the iteration number, second is the list element. We don't use
@@ -196,7 +196,7 @@ Lets create *show.kt* which will be template for rendering articles:
         </ul>
     $end
 
-As you can see it uses the *if* / *else* statement to determine that element 0 of the
+As you can see it uses the *if - else* statement to determine that element 0 of the
 context stack array is *nil* or not *nil*. This item is the *right* variable which we
 pass to the *Right.Render* method. If it isn't *nil* there is an article
 selected and we can render *title* and *body* variables. Otherwise we print our
