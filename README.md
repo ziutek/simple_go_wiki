@@ -413,14 +413,15 @@ interaction with the user. Lets create *controller.go* file:
             id = updateArticle(
                 id, wr.Request.Params["title"], wr.Request.Params["body"],
             )
-            // If we insert new article, we change art_num to its id. This allows
-            // show the article immediately after its creation.
+            // If we insert new article, we change art_num to its id. This
+            // allows to show the article immediately after its creation.
             art_num = strconv.Itoa(id)
         }
-        // Show modified/created article
-        show(wr, art_num)
+        // Redirect to the main page which will show the specified article
+        wr.Redirect(303, "/" + art_num)
+        // We could show this article directly using show(wr, art_num)
+        // but see: http://en.wikipedia.org/wiki/Post/Redirect/Get
     }
-
 
     func main() {
         viewInit()
@@ -458,7 +459,7 @@ The *update* handler, bound to *POST* method and "/(.\*)" URL scheme, is
 responsible for update an article in database. It modify it in database
 only when user push the *Save* button on edit page, which is checked using
 *wr.Request.Params["submit"]* variable. After updating the database this
-handler calls *show* handler for render the main page.
+handler sends the redirect response which redirects to the main page.
 
 ## Building the application
 

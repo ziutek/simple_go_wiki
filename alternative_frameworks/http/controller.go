@@ -34,8 +34,10 @@ func update(wr http.ResponseWriter, req *http.Request, art_num string) {
         // show the article immediately after its creation.
         art_num = strconv.Itoa(id)
     }
-    // Show modified/created article
-    show(wr, art_num)
+    // Redirect to the main page which will show the specified article
+    http.Redirect(wr, req, "/" + art_num, 303)
+    // We could show this article directly using show(wr, art_num)
+    // but see: http://en.wikipedia.org/wiki/Post/Redirect/Get
 }
 
 // Decide which handler to use basis on the request method and URL path.
@@ -70,6 +72,6 @@ func main() {
 
     err := http.ListenAndServe(":1111", http.HandlerFunc(router))
     if err != nil {
-        log.Exitln("ListenAndServe:", err)
+        log.Fatalln("ListenAndServe:", err)
     }
 }

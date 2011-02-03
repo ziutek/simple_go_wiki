@@ -28,12 +28,14 @@ func update(wr *web.Context, art_num string) {
         id = updateArticle(
             id, wr.Request.Params["title"], wr.Request.Params["body"],
         )
-        // If we insert new article, we change art_num to its id. This allows
-        // show the article immediately after its creation.
+        // If we insert new article, we change art_num to its id. This
+        // allows to show the article immediately after its creation.
         art_num = strconv.Itoa(id)
     }
-    // Show modified/created article
-    show(wr, art_num)
+    // Redirect to the main page which will show the specified article
+    wr.Redirect(303, "/" + art_num)
+    // We could show this article directly using show(wr, art_num)
+    // but see: http://en.wikipedia.org/wiki/Post/Redirect/Get
 }
 
 func main() {
