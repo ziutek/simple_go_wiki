@@ -1,7 +1,8 @@
 # How to write database-driven Web application using Go
 
 In this tutorial I tried to explain how you can use *web.go*,
-*kview*/*kasia.go* and *MyMySQL* together to write a simple database driven web application. As usual, the example application will be a simple Wiki.
+*kview*/*kasia.go* and *MyMySQL* together to write a simple database driven web
+application. As usual, the example application will be a simple Wiki.
 
 ## Prerequisites
 
@@ -9,7 +10,8 @@ In this tutorial I tried to explain how you can use *web.go*,
 * Basic knowledge about HTML and HTTP.
 * Knowledge about MySQL and mysql command-line tool.
 * MySQL account with permissions to create tables.
-* Last version of Go compiler - see [Go homepage](http://golang.org/doc/install.html)
+* Last version of Go compiler - see
+  [Go homepage](http://golang.org/doc/install.html)
 
 ## Database
 
@@ -26,10 +28,10 @@ it. In this case, you can create a separate database for this example:
 
     mysql> create database test;
     Query OK, 1 row affected (0.03 sec)
-    
+
     mysql> use test
     Database changed
-    
+
 If you have only simple MySQL account, with privileges to one database, you will
 need to modify further examples, using the name of your database and your user
 name. You must also make sure that your database doesn't contain a table called
@@ -52,7 +54,7 @@ Next we may create separate user for our application and grant him access to
 
     mysql> SET PASSWORD FOR testuser@localhost = PASSWORD('TestPasswd9')
     Query OK, 0 rows affected (0.00 sec)
-    
+
 ## View
 
 Lets write some code in Go. To define the application view we will use *kview*
@@ -196,13 +198,48 @@ Lets create *show.kt* which will be template for rendering articles:
         </ul>
     $end
 
-As you can see it uses the *if - else* statement to determine that element 0 of the
-context stack array is *nil* or not *nil*. This item is the *right* variable which we
-pass to the *Right.Render* method. If it isn't *nil* there is an article
-selected and we can render *title* and *body* variables. Otherwise we print our
-alternative text.
+As you can see it uses the *if - else* statement to determine that element 0 of
+the context stack array is *nil* or not *nil*. This item is the *right* variable
+which we pass to the *Right.Render* method. If it isn't *nil* there is an
+article selected and we can render *title* and *body* variables. Otherwise we
+print our alternative text.
 
-Finally, lets create *edit.kt*:
+#### An interlude about the context stack.
+
+To render some template with *kview* package, you have to use *Exec* method in
+Go code or *Render* method in template code. Usually you need to pass some
+variables to render in template code. For example if you use *Exec* or *Render*
+method like this:
+
+    v.Exec(wr, a, b)
+    v.Render(a, b)
+
+the template associated with *v* view will be rendered with following context
+stack:
+
+    []interface{divs, a, b}
+
+The *divs* variable contains subtemplates added to *v* by *Div* method.
+If you write template like this:
+
+    $x  $[1].y
+
+then *Exec* or *Render* method will look for *x* and *y* attributes as follows:
+
+1. *x* will be first searched in *a*, and if not found, it will be searched in
+   *b*, and if *b* also doesn't contains field of name *x*, it will be searched
+   in *divs*.
+2. *y* will be searched only in *a* because you specify directly element of
+   context stack in which to look for it.
+
+As you can see, you can also use the context stack directly, for example:
+
+* Go code: `v.Exec(os.Stdout, "Hello", "world!")`
+* template: `$[1] $[2]`
+* output: `Hello world!`
+
+After this small interlude we return to our work. Lets create last template in
+*edit.kt* file:
 
     <form action='/$id' method='post'>
         <div>
