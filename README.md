@@ -214,8 +214,8 @@ method like this:
     v.Exec(wr, a, b)
     v.Render(a, b)
 
-the template associated with *v* view will be rendered with following context
-stack:
+the template associated with *v* view will be rendered with the following
+context stack:
 
     []interface{divs, a, b}
 
@@ -226,8 +226,8 @@ If you write template like this:
 
 then *Exec* or *Render* method will look for *x* and *y* attributes as follows:
 
-1. *x* will be first searched in *a*, and if not found, it will be searched in
-   *b*, and if *b* also doesn't contains field of name *x*, it will be searched
+1. *x* will be first searched in *b*, and if not found, it will be searched in
+   *a*, and if *a* also doesn't contains field of name *x*, it will be searched
    in *divs*.
 2. *y* will be searched only in *a* because you specify directly element of
    context stack in which to look for it.
@@ -238,8 +238,8 @@ As you can see, you can also use the context stack directly, for example:
 * template: `$[1] $[2]`
 * output: `Hello world!`
 
-After this small interlude we return to our work. Lets create last template in
-*edit.kt* file:
+After this small interlude we should return to our work. Lets create last
+template in *edit.kt* file:
 
     <form action='/$id' method='post'>
         <div>
