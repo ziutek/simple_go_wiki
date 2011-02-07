@@ -200,8 +200,8 @@ Lets create *show.kt* which will be template for rendering articles:
 
 As you can see it uses the *if - else* statement to determine that is there
 the article selected or not. If article is selected then *id* field of the
-*ArticleList* has no zero value and we can render *title* and *body* variables.
-Otherwise we print our alternative text.
+*Article* struct (defined later) has no zero value so we can render *title*
+and *body* variables. Otherwise we print our alternative text.
 
 #### An interlude about the context stack.
 
