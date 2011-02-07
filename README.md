@@ -180,7 +180,7 @@ after *nn* means that we counts from 1, not from 0.
 
 Lets create *show.kt* which will be template for rendering articles:
 
-    $if [0]:
+    $if id:
         <div>
             <h4>$title</h4>
             $body
@@ -198,11 +198,10 @@ Lets create *show.kt* which will be template for rendering articles:
         </ul>
     $end
 
-As you can see it uses the *if - else* statement to determine that element 0 of
-the context stack array is *nil* or not *nil*. This item is the *right* variable
-which we pass to the *Right.Render* method. If it isn't *nil* there is an
-article selected and we can render *title* and *body* variables. Otherwise we
-print our alternative text.
+As you can see it uses the *if - else* statement to determine that is there
+the article selected or not. If article is selected then *id* field of the
+*ArticleList* has no zero value and we can render *title* and *body* variables.
+Otherwise we print our alternative text.
 
 #### An interlude about the context stack.
 
@@ -240,6 +239,15 @@ list:
   `v.Exec(os.Stdout, "Hello", "world!", map[string]string{"kasia": "Katy"})`
 * template: `$[1] $[2]  $[1] $kasia!`
 * output: `Hello world!  Hello Katy!`
+
+At last, you can print full context stack to check their contents as follows:
+
+    $for i, v in @:
+        $i: $v<br>
+    $end
+
+*@* is the context stack itself. You may skip this character if it isn't
+necessary. For example `$[1] $[2]` is shorter equivalent for `$@[1] $@[2]`.
 
 After this small interlude we should return to our work. Lets create last
 template in *edit.kt* file:

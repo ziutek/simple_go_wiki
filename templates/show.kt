@@ -1,4 +1,4 @@
-$if [0]:
+$if id:
   <div>
     <h4>$title</h4>
     $body
