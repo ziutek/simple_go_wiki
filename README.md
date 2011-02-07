@@ -217,10 +217,11 @@ method like this:
 the template associated with *v* view will be rendered with the following
 context stack:
 
-    []interface{divs, a, b}
+    []interface{}{divs, a, b} 
 
-The *divs* variable contains subtemplates added to *v* by *Div* method.
-If you write template like this:
+As you can see there is the *divs* variable at the bottom of the stack. *divs*
+is a map containing subviews (subtemplates) added to *v* by *Div* method. Your
+*b* variable is at the top of the stack. If you write template like this:
 
     $x  $[1].y
 
@@ -232,11 +233,13 @@ then *Exec* or *Render* method will look for *x* and *y* attributes as follows:
 2. *y* will be searched only in *a* because you specify directly element of
    context stack in which to look for it.
 
-As you can see, you can also use the context stack directly, for example:
+As you can see, you can use the context stack as usual or as ordinary parameter
+list:
 
-* Go code: `v.Exec(os.Stdout, "Hello", "world!")`
-* template: `$[1] $[2]`
-* output: `Hello world!`
+* Go code:
+  `v.Exec(os.Stdout, "Hello", "world!", map[string]string{"kasia": "Katy"})`
+* template: `$[1] $[2]  $[1] $kasia!`
+* output: `Hello world!  Hello Katy!`
 
 After this small interlude we should return to our work. Lets create last
 template in *edit.kt* file:
