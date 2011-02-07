@@ -222,7 +222,7 @@ As you can see there is the *divs* variable at the bottom of the stack. *divs*
 is a map containing subviews (subtemplates) added to *v* by *Div* method. Your
 *b* variable is at the top of the stack. If you write template like this:
 
-    $x  $[1].y
+    $x  $@[1].y
 
 then *Exec* or *Render* method will look for *x* and *y* attributes as follows:
 
@@ -232,12 +232,12 @@ then *Exec* or *Render* method will look for *x* and *y* attributes as follows:
 2. *y* will be searched only in *a* because you specify directly element of
    context stack in which to look for it.
 
-As you can see, you can use the context stack as usual or as ordinary parameter
-list:
+The *@* symbol means the context stack itself. So you can use the context stack
+as usual or as a parameter list:
 
 * Go code:
   `v.Exec(os.Stdout, "Hello", "world!", map[string]string{"kasia": "Katy"})`
-* template: `$[1] $[2]  $[1] $kasia!`
+* template: `$@[1] $@[2]  $@[1] $kasia!`
 * output: `Hello world!  Hello Katy!`
 
 At last, you can print full context stack to check their contents as follows:
@@ -245,9 +245,6 @@ At last, you can print full context stack to check their contents as follows:
     $for i, v in @:
         $i: $v<br>
     $end
-
-*@* is the context stack itself. You may skip this character if it isn't
-necessary. For example `$[1] $[2]` is shorter equivalent for `$@[1] $@[2]`.
 
 After this small interlude we should return to our work. Lets create last
 template in *edit.kt* file:
