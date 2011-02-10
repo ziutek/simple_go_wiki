@@ -216,11 +216,16 @@ method like this:
 the template associated with *v* view will be rendered with the following
 context stack:
 
-    []interface{}{divs, a, b} 
+    []interface{}{globals, a, b} 
 
-As you can see there is the *divs* variable at the bottom of the stack. *divs*
-is a map containing subviews (subtemplates) added to *v* by *Div* method. Your
-*b* variable is at the top of the stack. If you write template like this:
+As you can see there is the *globals* variable at the bottom of the stack.
+*globals* is a map containing global symbols:
+
+* subviews (subtemplates) added to *v* by *Div* method,
+* *len* and *fmt* utility functions,
+* yours symbols which you pass to *New* function as additional parameters.
+
+Your *b* variable is at the top of the stack. If you write template like this:
 
     $x  $@[1].y
 
