@@ -1,7 +1,6 @@
 package main
 
 import (
-    "log"
     "strconv"
     "github.com/garyburd/twister/server"
     "github.com/garyburd/twister/web"
@@ -54,10 +53,7 @@ func main() {
         Register("/style.css", "GET", web.FileHandler("static/style.css")).
         Register("/<artnum:.*>", "GET", show, "POST", update)
 
-    handler := web.ProcessForm(10000, false, router)
+    handler := web.ProcessForm(10e3, false, router)
 
-    err := server.ListenAndServe(":1111", &server.Config{Handler: handler})
-    if err != nil {
-        log.Fatalln("ListenAndServe:", err)
-    }
+    server.Run(":1111", handler)
 }
