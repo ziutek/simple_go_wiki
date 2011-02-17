@@ -219,11 +219,14 @@ context stack:
     []interface{}{globals, a, b} 
 
 As you can see there is the *globals* variable at the bottom of the stack.
-*globals* is a map containing global symbols:
+The *globals* is a map containing global symbols:
 
 * subviews (subtemplates) added to *v* by *Div* method,
 * *len* and *fmt* utility functions,
 * yours symbols which you pass to *New* function as additional parameters.
+
+For more information see [kview
+documentation](https://github.com/ziutek/kview/blob/master/README.md).  
 
 Your *b* variable is at the top of the stack. If you write template like this:
 
@@ -250,6 +253,9 @@ At last, you can print full context stack to check their contents as follows:
     $for i, v in @:
         $i: $v<br>
     $end
+
+Fro more information see [Kasia.go
+documentation](https://github.com/ziutek/kasia.go/blob/master/README.md).
 
 After this small interlude we should return to our work. Lets create last
 template in *edit.kt* file:
