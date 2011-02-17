@@ -233,9 +233,9 @@ then *Exec* or *Render* method will look for *x* and *y* attributes as follows:
 
 1. *x* will be first searched in *b*, and if not found, it will be searched in
    *a*, and if *a* also doesn't contains field of name *x*, it will be searched
-   in *divs*.
+   in *gobals*.
 2. *y* will be searched only in *a* because you specify directly element of
-   context stack in which to look for it.
+   context stack (*@[1]*) in which to look for it.
 
 The *@* symbol means the context stack itself. So you can use the context stack
 as usual or as a parameter list:
