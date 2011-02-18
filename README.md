@@ -556,10 +556,10 @@ need to instal *twister* server:
 
     goinstall github.com/garyburd/twister/server
 
-## Markdown in article body.
+## Using Markdown to format the article body
 
-To use [Markdown](http://daringfireball.net/projects/markdown/syntax) in article
-body wee need to modify two files: *show.kt* template, and *kview.go*.
+To use the [Markdown](http://daringfireball.net/projects/markdown/syntax) syntax
+in article body we need to modify two files: *show.kt* template, and *kview.go*.
 
 We add the *markdown* utility function to the *globals* for the *show.kt*
 template:
