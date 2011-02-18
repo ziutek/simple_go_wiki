@@ -559,16 +559,16 @@ need to instal *twister* server:
 ## Using Markdown to format the article body
 
 To use the [Markdown](http://daringfireball.net/projects/markdown/syntax) syntax
-in article body we need to modify two files: *show.kt* template, and *kview.go*.
+in article body we can modify *getArticle* function to use
+[markdown package](https://github.com/knieriem/markdown) to convert
+article body fetched from database before pass it into *body* field of *Article*
+struct. But we'll go another way to do this: we define *markdown* utility
+function (using *markdown* package) and we'll provide it to use inside the
+*show.kt* template. It seems to be more general solution: we create additional
+tool which we can use in any template code wherever we needed. To do this we
+should to modify two files: *show.kt* template, and *kview.go*.
 
-We add the *markdown* utility function to the *globals* for the *show.kt*
-template:
-
-    //...
-
-    main_view.Div("Right", kview.New("show.kt", utils))
-
-    //...
+We define *utils* map with only one utility function:
 
     utils = map[string]interface{} {
         "markdown": func(txt string) []byte {
@@ -579,9 +579,13 @@ template:
         },
     }
 
-and change `$body` to `$:markdown(body)` in *show.kt*.
+and add its contents to the *globals* for the *show.kt* template:
 
-See the *viwe.go* and *templates/show.kt* files in *using_markdown* directory.
+    main_view.Div("Right", kview.New("show.kt", utils))
+
+Next we should change `$body` to `$:markdown(body)` in the *show.kt* file. See
+the *viwe.go* and *templates/show.kt* files in *using_markdown* directory.
+
 To build and run example wiki with *Markdown* support type:
 
     $ goinstal github.com/knieriem/markdown
