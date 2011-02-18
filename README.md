@@ -556,6 +556,39 @@ need to instal *twister* server:
 
     goinstall github.com/garyburd/twister/server
 
+## Markdown in article body.
+
+To use [Markdown](http://daringfireball.net/projects/markdown/syntax) in article
+body wee need to modify two files: *show.kt* template, and *kview.go*.
+
+We add the *markdown* utility function to the *globals* for the *show.kt*
+template:
+
+    //...
+
+    main_view.Div("Right", kview.New("show.kt", utils))
+
+    //...
+
+    utils = map[string]interface{} {
+        "markdown": func(txt string) []byte {
+            var buf bytes.Buffer
+            doc := markdown.Parse(txt, mde)
+            doc.WriteHtml(&buf)
+            return buf.Bytes()
+        },
+    }
+
+and change `$body` to `$:markdown(body)` in *show.kt*.
+
+See the *viwe.go* and *templates/show.kt* files in *using_markdown* directory.
+To build and run example wiki with *Markdown* support type:
+
+    $ goinstal github.com/knieriem/markdown
+    $ cd using_markdown
+    $ make
+    $ ./wiki
+
 ## Exercices
 
 Try to add the ability to delete an article.

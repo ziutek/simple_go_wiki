@@ -1,7 +1,7 @@
 $if id:
   <div>
     <h2>$title</h2>
-    $body
+    $:markdown(body)
   </div>
   <div id='Actions'><a href='/edit/$id'>Edit</a></div>
 $else:
