@@ -48,7 +48,7 @@ func router(wr http.ResponseWriter, req *http.Request) {
     switch req.Method {
     case "GET":
         switch {
-        case req.URL.Path == "/style.css":
+        case req.URL.Path == "/style.css" || req.URL.Path == "/favicon.ico":
             http.ServeFile(wr, req, "static" + req.URL.Path)
 
         case strings.HasPrefix(req.URL.Path, edit_path):

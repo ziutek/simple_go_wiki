@@ -49,8 +49,9 @@ func main() {
     mysqlInit()
 
     router := web.NewRouter().
-        Register("/edit/<artnum:.*>", "GET", edit).
         Register("/style.css", "GET", web.FileHandler("static/style.css")).
+        Register("/favicon.ico", "GET", web.FileHandler("static/favicon.ico")).
+        Register("/edit/<artnum:.*>", "GET", edit).
         Register("/<artnum:.*>", "GET", show, "POST", update)
 
     handler := web.ProcessForm(10e3, false, router)
