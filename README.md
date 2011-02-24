@@ -52,7 +52,7 @@ Next we may create separate user for our application and grant him access to
     mysql> GRANT SELECT,INSERT,UPDATE,DELETE ON articles TO testuser@localhost;
     Query OK, 0 rows affected (0.00 sec)
 
-    mysql> SET PASSWORD FOR testuser@localhost = PASSWORD('TestPasswd9')
+    mysql> SET PASSWORD FOR testuser@localhost = PASSWORD('TestPasswd9');
     Query OK, 0 rows affected (0.00 sec)
 
 ## View
