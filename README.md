@@ -562,11 +562,11 @@ To use the [Markdown](http://daringfireball.net/projects/markdown/syntax) syntax
 in article body we can modify *getArticle* function to use
 [markdown package](https://github.com/knieriem/markdown) to convert
 article body fetched from database before pass it into *body* field of *Article*
-struct. But we'll go another way to do this: we define *markdown* utility
-function (using *markdown* package) and we'll provide it to use inside the
-*show.kt* template. It seems to be more general solution: we create additional
-tool which we can use in any template code wherever we needed. To do this we
-should to modify two files: *show.kt* template, and *kview.go*.
+struct. But we'll go another way: we define *markdown* utility function (using
+*markdown* package) and we'll provide it for using inside the *show.kt*
+template. It seems to be more general solution: we create additional tool which
+we can use in any template code wherever we needed. To do this we should to
+modify two files: *view.go* and *show.kt* template.
 
 We define *utils* map with only one utility function:
 
@@ -583,8 +583,9 @@ and add its contents to the *globals* for the *show.kt* template:
 
     main_view.Div("Right", kview.New("show.kt", utils))
 
-Next we should change `$body` to `$:markdown(body)` in the *show.kt* file. See
-the *viwe.go* and *templates/show.kt* files in *using_markdown* directory.
+At last we should change `$body` to `$:markdown(body)` in the *show.kt* file.
+For details see the *viwe.go* and *templates/show.kt* files in *using_markdown*
+directory.
 
 To build and run example wiki with *Markdown* support type:
 
