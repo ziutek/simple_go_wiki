@@ -12,7 +12,7 @@ type ViewCtx struct {
 
 // Render main page
 func show(req *web.Request) {
-    id, _ := strconv.Atoi(req.Param.GetDef("artnum", ""))
+    id, _ := strconv.Atoi(req.Param.Get("artnum"))
     main_view.Exec(
         req.Respond(web.StatusOK),
         ViewCtx{getArticleList(), getArticle(id)},
@@ -21,7 +21,7 @@ func show(req *web.Request) {
 
 // Render edit page
 func edit(req *web.Request) {
-    id, _ := strconv.Atoi(req.Param.GetDef("artnum", ""))
+    id, _ := strconv.Atoi(req.Param.Get("artnum"))
     edit_view.Exec(
             req.Respond(web.StatusOK),
             ViewCtx{getArticleList(), getArticle(id)},
@@ -30,10 +30,10 @@ func edit(req *web.Request) {
 
 // Update database and render main page
 func update(req *web.Request) {
-    id, _ := strconv.Atoi(req.Param.GetDef("artnum", ""))
-    if req.Param.GetDef("submit", "") == "Save" {
+    id, _ := strconv.Atoi(req.Param.Get("artnum"))
+    if req.Param.Get("submit") == "Save" {
         id = updateArticle(
-            id, req.Param.GetDef("title", ""), req.Param.GetDef("body", ""),
+            id, req.Param.Get("title"), req.Param.Get("body"),
         )
     }
     // Redirect to the main page which will show the specified article
