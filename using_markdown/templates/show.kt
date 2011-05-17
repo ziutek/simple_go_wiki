@@ -1,9 +1,9 @@
-$if id:
+$if Id:
   <div>
-    <h2>$title</h2>
-    $:markdown(body)
+    <h2>$Title</h2>
+    $:markdown(Body)
   </div>
-  <div id='Actions'><a href='/edit/$id'>Edit</a></div>
+  <div id='Actions'><a href='/edit/$Id'>Edit</a></div>
 $else:
   <h3>Simple Wiki</h3>
   <p>This application was wrote entirely in Go language, using the following

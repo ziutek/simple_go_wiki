@@ -93,13 +93,13 @@ In the *simple_go_wiki* directory we can create our *view.go* file:
 
         // Create main page
         main_view = layout.Copy()
-        main_view.Div("Left", article_list)
-        main_view.Div("Right", kview.New("show.kt"))
+        main_view.Div("left", article_list)
+        main_view.Div("right", kview.New("show.kt"))
 
         // Create edit page
         edit_view = layout.Copy()
-        edit_view.Div("Left", article_list)
-        edit_view.Div("Right", kview.New("edit.kt"))
+        edit_view.Div("left", article_list)
+        edit_view.Div("right", kview.New("edit.kt"))
     }
 
 
@@ -110,8 +110,8 @@ As you can see, our service will consist of two pages:
 
 Both pages will consists of two columns:
 
-* Left - list of articles,
-* Right - column specific to the page. 
+* left - list of articles,
+* right - column specific to the page. 
 
 Lets create our first Kasia template. It will define the layout of our site. We
 must create *layout.kt* file in *templates* directory:
@@ -126,8 +126,8 @@ must create *layout.kt* file in *templates* directory:
         <body>
             <div id='Container0'>
                 <div id='Container1'>
-                    <div id='Left'>$Left.Render(left)</div>
-                    <div id='Right'>$Right.Render(right)</div>
+                    <div id='Left'>$left.Render(Left)</div>
+                    <div id='Right'>$right.Render(Right)</div>
                 </div>
             </div>
         </body>
@@ -150,8 +150,8 @@ Next we will create *list.kt* which will be rendered in *Left* div.
     <a href='/edit/'>New article</a>
     <hr>
     <ul id='List'>
-    $for _, art in articles:
-        <li><a href='$art.Data[id]'>$art.Data[title]</a></li>
+    $for _, art in Articles:
+        <li><a href='$art.Data[Id]'>$art.Data[Title]</a></li>
     $end
     </ul>
 
@@ -180,10 +180,10 @@ after *nn* means that we counts from 1, not from 0.
 
 Lets create *show.kt* which will be template for rendering articles:
 
-    $if id:
+    $if Id:
         <div>
-            <h4>$title</h4>
-            $body
+            <h4>$Title</h4>
+            $Body
         </div>
         <div id='Actions'><a href='/edit/$id'>Edit</a></div>
     $else:
@@ -260,9 +260,9 @@ documentation](https://github.com/ziutek/kasia.go/blob/master/README.md).
 After this small interlude we should return to our work. Lets create last
 template in *edit.kt* file:
 
-    <form action='/$id' method='post'>
+    <form action='/$Id' method='post'>
         <div>
-            <input name='title' value='$title'>
+            <input name='title' value='$Title'>
             <textarea name='body'>$body</textarea>
         </div>
         <div id='Actions'>
@@ -375,8 +375,8 @@ Lets write the code that will be used to get data for left column of our
 web pages. 
 
     type ArticleList struct {
-        id, title int
-        articles  []*mymy.Row
+        Id, Title int
+        Articles  []*mymy.Row
     }
 
     // Returns list of articles for list.kt template. We don't create map
@@ -388,17 +388,17 @@ web pages.
             return nil
         }
         return &ArticleList{
-            id:       res.Map["id"],
-            title:    res.Map["title"],
-            articles: rows,
+            Id:       res.Map["id"],
+            Title:    res.Map["title"],
+            Articles: rows,
         }
     }
 
 Then define functions for getting and updating articles:
 
     type Article struct {
-        id          int
-        title, body string
+        Id          int
+        Title, Body string
     }
 
     // Get an article
@@ -409,9 +409,9 @@ Then define functions for getting and updating articles:
         }
         if len(rows) != 0 {
             article = &Article{
-                id:    id,
-                title: rows[0].Str(res.Map["title"]),
-                body:  rows[0].Str(res.Map["body"]),
+                Id:    id,
+                Title: rows[0].Str(res.Map["title"]),
+                Body:  rows[0].Str(res.Map["body"]),
             }
         }
         return
@@ -447,7 +447,7 @@ interaction with the user. Lets create *controller.go* file:
     )
 
     type ViewCtx struct {
-        left, right interface{}
+        Left, Right interface{}
     }
 
     // Render main page

@@ -7,7 +7,7 @@ import (
 )
 
 type ViewCtx struct {
-    left, right interface{}
+    Left, Right interface{}
 }
 
 // Render main page
@@ -49,8 +49,8 @@ func main() {
     mysqlInit()
 
     router := web.NewRouter().
-        Register("/style.css", "GET", web.FileHandler("static/style.css")).
-        Register("/favicon.ico", "GET", web.FileHandler("static/favicon.ico")).
+        Register("/style.css", "GET", web.FileHandler("static/style.css", nil)).
+        Register("/favicon.ico", "GET", web.FileHandler("static/favicon.ico", nil)).
         Register("/edit/<artnum:.*>", "GET", edit).
         Register("/<artnum:.*>", "GET", show, "POST", update)
 

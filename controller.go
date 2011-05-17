@@ -6,7 +6,7 @@ import (
 )
 
 type ViewCtx struct {
-    left, right interface{}
+    Left, Right interface{}
 }
 
 // Render main page

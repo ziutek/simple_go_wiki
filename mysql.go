@@ -60,8 +60,8 @@ func mysqlInit() {
 }
 
 type ArticleList struct {
-    id, title int
-    articles  []*mymy.Row
+    Id, Title int
+    Articles  []*mymy.Row
 }
 
 // Returns list of articles for list.kt template. We don't create map
@@ -73,15 +73,15 @@ func getArticleList() *ArticleList {
         return nil
     }
     return &ArticleList{
-        id:       res.Map["id"],
-        title:    res.Map["title"],
-        articles: rows,
+        Id:       res.Map["id"],
+        Title:    res.Map["title"],
+        Articles: rows,
     }
 }
 
 type Article struct {
-    id          int
-    title, body string
+    Id          int
+    Title, Body string
 }
 
 // Get an article
@@ -92,9 +92,9 @@ func getArticle(id int) (article *Article) {
     }
     if len(rows) != 0 {
         article = &Article{
-            id:    id,
-            title: rows[0].Str(res.Map["title"]),
-            body:  rows[0].Str(res.Map["body"]),
+            Id:    id,
+            Title: rows[0].Str(res.Map["title"]),
+            Body:  rows[0].Str(res.Map["body"]),
         }
     }
     return

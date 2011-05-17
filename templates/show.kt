@@ -1,7 +1,7 @@
-$if id:
+$if Id:
   <div>
-    <h2>$title</h2>
-    $body
+    <h2>$Title</h2>
+    $Body
   </div>
   <div id='Actions'><a href='/edit/$id'>Edit</a></div>
 $else:

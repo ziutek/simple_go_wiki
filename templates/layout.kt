@@ -8,8 +8,8 @@
   <body>
     <div id='Container0'>
       <div id='Container1'>
-        <div id='Left'>$Left.Render(left)</div>
-        <div id='Right'>$Right.Render(right)</div>
+        <div id='Left'>$left.Render(Left)</div>
+        <div id='Right'>$right.Render(Right)</div>
       </div>
     </div>
   </body>

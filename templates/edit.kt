@@ -1,7 +1,7 @@
-<form action='/$id' method='post'>
+<form action='/$Id' method='post'>
   <div>
-    <input name='title' value='$title'>
-    <textarea name='body'>$body</textarea>
+    <input name='title' value='$Title'>
+    <textarea name='body'>$Body</textarea>
   </div>
   <div id='Actions'>
     <input type='submit' value='Cancel'>
