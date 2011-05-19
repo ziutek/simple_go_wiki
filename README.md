@@ -116,10 +116,10 @@ Both pages will consists of two columns:
 Lets create our first Kasia template. It will define the layout of our site. We
 must create *layout.kt* file in *templates* directory:
 
-    <!DOCTYPE HTML PUBLIC '-//W3C//DTD HTML 4.01 Transitional//EN'>
+    <!doctype html>
     <html>
         <head>
-            <meta http-equiv='Content-type' content='text/html; charset=utf-8'>
+            <meta charset='utf-8'>
             <link href='/style.css' type='text/css' rel='stylesheet'>
             <title>Simple Wiki</title>
         </head>
@@ -137,8 +137,8 @@ This simple layout is responsible for:
 
 * create proper HTML document with the appropriate *doctype*, *head* and *body*
   sections,
-* render *Left* and *Right* divs (subtemplates) using the data available in
-  *left* and *right* variables.
+* render *left* and *right* divs (subtemplates) using the data available in
+  *Left* and *Right* variables.
 
 The *Render* method is defined in *kview* package. It renders subview with
 specified data in the place of its occurrence. This subview can have its own
