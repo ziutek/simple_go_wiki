@@ -185,7 +185,7 @@ Lets create *show.kt* which will be template for rendering articles:
             <h4>$Title</h4>
             $Body
         </div>
-        <div id='Actions'><a href='/edit/$id'>Edit</a></div>
+        <div id='Actions'><a href='/edit/$Id'>Edit</a></div>
     $else:
         <h4>Simple Wiki</h4>
         <p>This application was wrote entirely in Go language, using the
