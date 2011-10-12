@@ -3,7 +3,7 @@ package main
 import (
     "os"
     "log"
-    mymy "github.com/ziutek/mymysql"
+    "github.com/ziutek/mymysql"
 )
 
 const (
@@ -16,10 +16,10 @@ const (
 
 var (
     // MySQL connection handler
-    db = mymy.New(db_proto, "", db_addr, db_user, db_pass, db_name)
+    db = mysql.New(db_proto, "", db_addr, db_user, db_pass, db_name)
 
     // Prepared statements
-    artlist_stmt, article_stmt, update_stmt *mymy.Statement
+    artlist_stmt, article_stmt, update_stmt *mysql.Statement
 )
 
 func mysqlError(err os.Error) (ret bool) {
@@ -61,7 +61,7 @@ func mysqlInit() {
 
 type ArticleList struct {
     Id, Title int
-    Articles  []*mymy.Row
+    Articles  []*mysql.Row
 }
 
 // Returns list of articles for list.kt template. We don't create map
