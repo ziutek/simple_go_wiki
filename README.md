@@ -151,7 +151,7 @@ Next we will create *list.kt* which will be rendered in *Left* div.
     <hr>
     <ul id='List'>
     $for _, art in Articles:
-        <li><a href='$art.Data[Id]'>$art.Data[Title]</a></li>
+        <li><a href='$art[Id]'>$art[Title]</a></li>
     $end
     </ul>
 
@@ -159,11 +159,11 @@ This simple template prints the *New article* link and the list of links to
 articles stored in the database.
 
 As you can see it uses a *for* statement to iterate over the *articles* list
-(slice). For each item, it uses *art.Data[id]* to create relative URL, and
-*art.Data[title]* to print the title of the article. *articles*, *id* and
+(slice). For each item, it uses *art[id]* to create relative URL, and
+*art[title]* to print the title of the article. *articles*, *id* and
 *title* are members of *ArticleList* struct (defined later in this tutorial). 
-*id* and *title* will contain indexes to the appropriate item in *Data* slice,
-*art.Data* will contain the raw row fetched from the MySQL database.
+*id* and *title* will contain indexes to the appropriate item in *Row* slice,
+*art* will contain the raw row fetched from the MySQL database.
 
 *for* statement create two variables (*_* and *art*) in the local context.
 First is the iteration number, second is the list element. We don't use
@@ -171,7 +171,7 @@ iteration number in our example but it may be useful:
 
     $for nn+, art in articles:
         <div class='$if even(nn):Even$else:Odd$end'>
-            $nn. <a href='$art.Data[id]'>$art.Data[title]</a>
+            $nn. <a href='$art[id]'>$art[title]</a>
         </div>
     $end
 
@@ -376,7 +376,7 @@ web pages.
 
     type ArticleList struct {
         Id, Title int
-        Articles  []*mysql.Row
+        Articles  []mysql.Row
     }
 
     // Returns list of articles for list.kt template. We don't create map

@@ -61,7 +61,7 @@ func mysqlInit() {
 
 type ArticleList struct {
     Id, Title int
-    Articles  []*mysql.Row
+    Articles  []mysql.Row
 }
 
 // Returns list of articles for list.kt template. We don't create map
