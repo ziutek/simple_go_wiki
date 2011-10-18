@@ -12,7 +12,7 @@ type ViewCtx struct {
 
 // Render main page
 func show(req *web.Request) {
-    id, _ := strconv.Atoi(req.Param.Get("artnum"))
+    id, _ := strconv.Atoi(req.URLParam["artnum"])
     main_view.Exec(
         req.Respond(web.StatusOK),
         ViewCtx{getArticleList(), getArticle(id)},
@@ -21,7 +21,7 @@ func show(req *web.Request) {
 
 // Render edit page
 func edit(req *web.Request) {
-    id, _ := strconv.Atoi(req.Param.Get("artnum"))
+    id, _ := strconv.Atoi(req.URLParam["artnum"])
     edit_view.Exec(
             req.Respond(web.StatusOK),
             ViewCtx{getArticleList(), getArticle(id)},
@@ -30,7 +30,7 @@ func edit(req *web.Request) {
 
 // Update database and render main page
 func update(req *web.Request) {
-    id, _ := strconv.Atoi(req.Param.Get("artnum"))
+    id, _ := strconv.Atoi(req.URLParam["artnum"])
     if req.Param.Get("submit") == "Save" {
         id = updateArticle(
             id, req.Param.Get("title"), req.Param.Get("body"),
@@ -38,10 +38,6 @@ func update(req *web.Request) {
     }
     // Redirect to the main page which will show the specified article
     req.Redirect("/" + strconv.Itoa(id), false)
-    // We could show this article directly using:
-    //     req.Param.Set("artnum", strconv.Itoa(id))
-    //     show(req)
-    // but see: http://en.wikipedia.org/wiki/Post/Redirect/Get
 }
 
 func main() {
@@ -51,8 +47,8 @@ func main() {
     router := web.NewRouter().
         Register("/style.css", "GET", web.FileHandler("static/style.css", nil)).
         Register("/favicon.ico", "GET", web.FileHandler("static/favicon.ico", nil)).
-        Register("/edit/<artnum:.*>", "GET", edit).
-        Register("/<artnum:.*>", "GET", show, "POST", update)
+        Register("/edit/<artnum:[0-9]*>", "GET", edit).
+        Register("/<artnum:[0-9]*>", "GET", show, "POST", update)
 
     handler := web.ProcessForm(10e3, false, router)
 
