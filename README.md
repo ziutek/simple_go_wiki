@@ -102,7 +102,6 @@ In the *simple_go_wiki* directory we can create our *view.go* file:
         edit_view.Div("right", kview.New("edit.kt"))
     }
 
-
 As you can see, our service will consist of two pages:
 
 * *main_view* - using which the user will be able to read articles,
@@ -287,12 +286,12 @@ Now, we can write the MySQL connector for our application. Lets create the
 *mysql.go* file. In the first part of this file we import necessary packages,
 define const and declare global variables:
 
-    package main
-
     import (
         "os"
         "log"
-        "github.com/ziutek/mymysql"
+        "github.com/ziutek/mymysql/mysql"
+        "github.com/ziutek/mymysql/autorc"
+        _ "github.com/ziutek/mymysql/thrsafe"
     )
 
     const (
@@ -305,10 +304,10 @@ define const and declare global variables:
 
     var (
         // MySQL connection handler
-        db = mysql.New(db_proto, "", db_addr, db_user, db_pass, db_name)
+        db = autorc.New(db_proto, "", db_addr, db_user, db_pass, db_name)
 
         // Prepared statements
-        artlist_stmt, article_stmt, update_stmt *mysql.Statement
+        artlist_stmt, article_stmt, update_stmt *autorc.Stmt
     )
 
 After declaration, the MySQL connection handler is ready for connect to the
@@ -343,27 +342,29 @@ and initialises our MySQL connector.
         var err error
 
         // Initialisation command
-        db.Register("SET NAMES utf8")
+        db.Raw.Register("SET NAMES utf8")
 
         // Prepare server-side statements
 
-        artlist_stmt, err = db.PrepareAC("SELECT id, title FROM articles")
+        artlist_stmt, err = db.Prepare("SELECT id, title FROM articles")
         mysqlErrExit(err)
 
-        article_stmt, err = db.PrepareAC("SELECT title, body FROM articles WHERE id = ?")
+        article_stmt, err = db.Prepare(
+            "SELECT title, body FROM articles WHERE id = ?",
+	)
         mysqlErrExit(err)
 
-        update_stmt, err = db.PrepareAC(
-            "INSERT articles (id, title, body) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE title=VALUES(title), body=VALUES(body)",
+        update_stmt, err = db.Prepare(
+            "INSERT articles (id, title, body) VALUES (?, ?, ?)" +
+            " ON DUPLICATE KEY UPDATE title=VALUES(title), body=VALUES(body)",
         )
         mysqlErrExit(err)
     }
 
 The *Register* method registers commands for executing immediately after
-establishing the connection to the database. The *PrepareAC* prepare the
-server-side prepared statement. *AC* suffix means that it is a function from
-MyMySQL *autorecon* interface. Therefore, during the first *PrepareAC*  call the
-connection will be established.
+establishing the connection to the database. The *Prepare* prepare the
+server-side prepared statement. We use functions from *mymysql/autorc* package
+Therefore, during the first *Prepare* call the connection will be established.
 
 Why do we use prepared statements instead of ordinary queries? We use them
 mainly for security reasons. With prepared statements we don't need any escape
@@ -383,13 +384,13 @@ web pages.
     // because it is to expensive work. Instead, we provide raw query result
     // and indexes to id and title fields.
     func getArticleList() *ArticleList {
-        rows, res, err := artlist_stmt.ExecAC()
+        rows, res, err := artlist_stmt.Exec()
         if mysqlError(err) {
             return nil
         }
         return &ArticleList{
-            Id:       res.Map["id"],
-            Title:    res.Map["title"],
+            Id:       res.Map("id"),
+            Title:    res.Map("title"),
             Articles: rows,
         }
     }
@@ -403,27 +404,27 @@ Then define functions for getting and updating articles:
 
     // Get an article
     func getArticle(id int) (article *Article) {
-        rows, res, err := article_stmt.ExecAC(id)
+        rows, res, err := article_stmt.Exec(id)
         if mysqlError(err) {
             return
         }
         if len(rows) != 0 {
             article = &Article{
                 Id:    id,
-                Title: rows[0].Str(res.Map["title"]),
-                Body:  rows[0].Str(res.Map["body"]),
+                Title: rows[0].Str(res.Map("title")),
+                Body:  rows[0].Str(res.Map("body")),
             }
         }
         return
     }
 
-    // Insert or update an article. It returns id of updated/inserted article
+    // Insert or update an article. It returns id of updated/inserted article.
     func updateArticle(id int, title, body string) int {
-        _, res, err := update_stmt.ExecAC(id, title, body)
+            _, res, err := update_stmt.Exec(id, title, body)
         if mysqlError(err) {
             return 0
         }
-        return int(res.InsertId)
+        return int(res.InsertId())
     }
 
 The last function uses MySQL *INSERT ... ON DUPLICATE KEY UPDATE* query. It
