@@ -321,7 +321,7 @@ MySQL server reboot.
 
 Next we will define some utility functions for MySQL errors handling:
 
-    func mysqlError(err os.Error) (ret bool) {
+    func mysqlError(err error) (ret bool) {
         ret = (err != nil)
         if ret {
             log.Println("MySQL error:", err)
@@ -329,7 +329,7 @@ Next we will define some utility functions for MySQL errors handling:
         return
     }
 
-    func mysqlErrExit(err os.Error) {
+    func mysqlErrExit(err error) {
         if mysqlError(err) {
             os.Exit(1)
         }
@@ -340,7 +340,7 @@ Lets define the initialisation function. It is called once from *main* function
 and initialises our MySQL connector.
 
     func mysqlInit() {
-        var err os.Error
+        var err error
 
         // Initialisation command
         db.Register("SET NAMES utf8")
