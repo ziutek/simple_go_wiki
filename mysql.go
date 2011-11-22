@@ -3,7 +3,9 @@ package main
 import (
 	"os"
 	"log"
-	"github.com/ziutek/mymysql"
+	"github.com/ziutek/mymysql/mysql"
+	"github.com/ziutek/mymysql/autorc"
+	_ "github.com/ziutek/mymysql/thrsafe"
 )
 
 const (
@@ -16,10 +18,10 @@ const (
 
 var (
 	// MySQL connection handler
-	db = mysql.New(db_proto, "", db_addr, db_user, db_pass, db_name)
+	db = autorc.New(db_proto, "", db_addr, db_user, db_pass, db_name)
 
 	// Prepared statements
-	artlist_stmt, article_stmt, update_stmt *mysql.Statement
+	artlist_stmt, article_stmt, update_stmt *autorc.Stmt
 )
 
 func mysqlError(err error) (ret bool) {
@@ -40,19 +42,19 @@ func mysqlInit() {
 	var err error
 
 	// Initialisation command
-	db.Register("SET NAMES utf8")
+	db.Raw.Register("SET NAMES utf8")
 
 	// Prepare server-side statements
 
-	artlist_stmt, err = db.PrepareAC("SELECT id, title FROM articles")
+	artlist_stmt, err = db.Prepare("SELECT id, title FROM articles")
 	mysqlErrExit(err)
 
-	article_stmt, err = db.PrepareAC(
+	article_stmt, err = db.Prepare(
 		"SELECT title, body FROM articles WHERE id = ?",
 	)
 	mysqlErrExit(err)
 
-	update_stmt, err = db.PrepareAC(
+	update_stmt, err = db.Prepare(
 		"INSERT articles (id, title, body) VALUES (?, ?, ?)" +
 			" ON DUPLICATE KEY UPDATE title=VALUES(title), body=VALUES(body)",
 	)
@@ -68,13 +70,13 @@ type ArticleList struct {
 // because it is to expensive work. Instead, we provide raw query result
 // and indexes to id and title fields.
 func getArticleList() *ArticleList {
-	rows, res, err := artlist_stmt.ExecAC()
+	rows, res, err := artlist_stmt.Exec()
 	if mysqlError(err) {
 		return nil
 	}
 	return &ArticleList{
-		Id:       res.Map["id"],
-		Title:    res.Map["title"],
+		Id:       res.Map("id"),
+		Title:    res.Map("title"),
 		Articles: rows,
 	}
 }
@@ -86,15 +88,15 @@ type Article struct {
 
 // Get an article
 func getArticle(id int) (article *Article) {
-	rows, res, err := article_stmt.ExecAC(id)
+	rows, res, err := article_stmt.Exec(id)
 	if mysqlError(err) {
 		return
 	}
 	if len(rows) != 0 {
 		article = &Article{
 			Id:    id,
-			Title: rows[0].Str(res.Map["title"]),
-			Body:  rows[0].Str(res.Map["body"]),
+			Title: rows[0].Str(res.Map("title")),
+			Body:  rows[0].Str(res.Map("body")),
 		}
 	}
 	return
@@ -102,9 +104,9 @@ func getArticle(id int) (article *Article) {
 
 // Insert or update an article. It returns id of updated/inserted article.
 func updateArticle(id int, title, body string) int {
-	_, res, err := update_stmt.ExecAC(id, title, body)
+	_, res, err := update_stmt.Exec(id, title, body)
 	if mysqlError(err) {
 		return 0
 	}
-	return int(res.InsertId)
+	return int(res.InsertId())
 }
