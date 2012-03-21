@@ -1,8 +1,8 @@
 # How to write database-driven Web application using Go
 
-In this tutorial I tried to explain how you can use *web.go*,
-*kview*/*kasia.go* and *MyMySQL* together to write a simple database driven web
-application. As usual, the example application will be a simple Wiki.
+In this tutorial I tried to explain how you can use *kview*/*kasia.go* and
+*MyMySQL* to write a simple database driven web application in Go. As usual,
+the example application will be a simple Wiki.
 
 ## Prerequisites
 
@@ -10,8 +10,8 @@ application. As usual, the example application will be a simple Wiki.
 * Basic knowledge about HTML and HTTP.
 * Knowledge about MySQL and mysql command-line tool.
 * MySQL account with permissions to create tables.
-* Last version of Go compiler - see
-  [Go homepage](http://golang.org/doc/install.html)
+* Last weekly version of Go compiler - see
+  [Go homepage](http://weekly.golang.org/doc/install.html)
 
 ## Database
 
@@ -60,20 +60,18 @@ Next we may create separate user for our application and grant him access to
 Lets write some code in Go. To define the application view we will use *kview*
 and *kasia.go* packages. You may install them this way:
 
-    $ goinstall github.com/ziutek/kview
+    $ go get github.com/ziutek/kview
 
-It automatically downloads, builds and installs *kasia.go* and *kview*. You can
-find source code in *$GOROOT/src/pkg/github.com/ziutek*
- 
+It automatically downloads, builds and installs *kasia.go* and *kview*.
+
 Next we will create the directory for our project:
 
     $ mkdir simple_go_wiki
     $ cd simple_go_wiki
     $ mkdir templates static
 
-The *templates* directory will be used for our Kasia templates. The *static*
-directory will be used for static files like *style.css*.  Static files are 
-served by *web.go*.
+The *templates* directory will be used for our HTML templates. The *static*
+directory will be used for static files like *style.css*.
 
 In the *simple_go_wiki* directory we can create our *view.go* file:
 
@@ -84,7 +82,7 @@ In the *simple_go_wiki* directory we can create our *view.go* file:
     // Our Wiki pages
     var main_view, edit_view kview.View
 
-    func viewInit() {
+    func init() {
         // Load layout template
         layout := kview.New("layout.kt")
 
@@ -113,7 +111,7 @@ Both pages will consists of two columns:
 * right - column specific to the page. 
 
 Lets create our first Kasia template. It will define the layout of our site. We
-must create *layout.kt* file in *templates* directory:
+have to create *layout.kt* file in *templates* directory:
 
     <!doctype html>
     <html>
@@ -280,11 +278,13 @@ We need a style sheet to set the appearance of our website. You can find it in
 For communication with the MySQL server we use *MyMySQL* package. Lets install
 it:
 
-    $ goinstall github.com/ziutek/mymysql
+    $ go get github.com/ziutek/mymysql/autorc
 
 Now, we can write the MySQL connector for our application. Lets create the
 *mysql.go* file. In the first part of this file we import necessary packages,
 define const and declare global variables:
+ 
+	package main
 
     import (
         "os"
@@ -335,10 +335,9 @@ Next we will define some utility functions for MySQL errors handling:
     }
 
 
-Lets define the initialisation function. It is called once from *main* function
-and initialises our MySQL connector.
+Lets define the initialisation function. 
 
-    func mysqlInit() {
+    func init() {
         var err error
 
         // Initialisation command
@@ -351,7 +350,7 @@ and initialises our MySQL connector.
 
         article_stmt, err = db.Prepare(
             "SELECT title, body FROM articles WHERE id = ?",
-	)
+        )
         mysqlErrExit(err)
 
         update_stmt, err = db.Prepare(
@@ -362,7 +361,7 @@ and initialises our MySQL connector.
     }
 
 The *Register* method registers commands for executing immediately after
-establishing the connection to the database. The *Prepare* prepare the
+establishing the connection to the database. The *Prepare* prepares the
 server-side prepared statement. We use functions from *mymysql/autorc* package
 Therefore, during the first *Prepare* call the connection will be established.
 
@@ -443,71 +442,81 @@ interaction with the user. Lets create *controller.go* file:
     package main
 
     import (
-        "strconv"
-        "github.com/hoisie/web.go"
+	    "log"
+	    "net/http"
+	    "strconv"
+	    "strings"
     )
 
     type ViewCtx struct {
-        Left, Right interface{}
+	    Left, Right interface{}
     }
 
     // Render main page
-    func show(wr *web.Context, art_num string) {
-        id, _ := strconv.Atoi(art_num)
-        main_view.Exec(wr, ViewCtx{getArticleList(), getArticle(id)})
+    func show(wr http.ResponseWriter, art_num string) {
+	    id, _ := strconv.Atoi(art_num)
+	    main_view.Exec(wr, ViewCtx{getArticleList(), getArticle(id)})
     }
 
     // Render edit page
-    func edit(wr *web.Context, art_num string) {
-        id, _ := strconv.Atoi(art_num)
-        edit_view.Exec(wr, ViewCtx{getArticleList(), getArticle(id)})
+    func edit(wr http.ResponseWriter, art_num string) {
+	    id, _ := strconv.Atoi(art_num)
+	    edit_view.Exec(wr, ViewCtx{getArticleList(), getArticle(id)})
     }
 
     // Update database and render main page
-    func update(wr *web.Context, art_num string) {
-        if wr.Request.Params["submit"] == "Save" {
-            id, _ := strconv.Atoi(art_num) // id == 0 means new article
-            id = updateArticle(
-                id, wr.Request.Params["title"], wr.Request.Params["body"],
-            )
-            // If we insert new article, we change art_num to its id. This
-            // allows to show the article immediately after its creation.
-            art_num = strconv.Itoa(id)
-        }
-        // Redirect to the main page which will show the specified article
-        wr.Redirect(303, "/" + art_num)
-        // We could show this article directly using show(wr, art_num)
-        // but see: http://en.wikipedia.org/wiki/Post/Redirect/Get
+    func update(wr http.ResponseWriter, req *http.Request, art_num string) {
+	    if req.FormValue("submit") == "Save" {
+		    id, _ := strconv.Atoi(art_num) // id == 0 means new article
+		    id = updateArticle(
+			    id, req.FormValue("title"), req.FormValue("body"),
+		    )
+		    // If we insert new article, we change art_num to its id. This allows
+		    // show the article immediately after its creation.
+		    art_num = strconv.Itoa(id)
+	    }
+	    // Redirect to the main page which will show the specified article
+	    http.Redirect(wr, req, "/"+art_num, 303)
+	    // We could show this article directly using show(wr, art_num)
+	    // but see: http://en.wikipedia.org/wiki/Post/Redirect/Get
     }
 
+    // Decide which handler to use basis on the request method and URL path.
+    func router(wr http.ResponseWriter, req *http.Request) {
+	    root_path := "/"
+	    edit_path := "/edit/"
+
+	    switch req.Method {
+	    case "GET":
+		    switch {
+		    case req.URL.Path == "/style.css" || req.URL.Path == "/favicon.ico":
+			    http.ServeFile(wr, req, "static"+req.URL.Path)
+
+		    case strings.HasPrefix(req.URL.Path, edit_path):
+			    edit(wr, req.URL.Path[len(edit_path):])
+    
+		    case strings.HasPrefix(req.URL.Path, root_path):
+			    show(wr, req.URL.Path[len(root_path):])
+		    }
+
+	    case "POST":
+		    switch {
+		    case strings.HasPrefix(req.URL.Path, root_path):
+			    update(wr, req, req.URL.Path[len(root_path):])
+		    }
+	    }
+    }
+    
     func main() {
-        viewInit()
-        mysqlInit()
-
-        web.Get("/edit/(.*)", edit)
-        web.Get("/(.*)", show)
-        web.Post("/(.*)", update)
-        web.Run("0.0.0.0:1111")
+	    err := http.ListenAndServe(":2222", http.HandlerFunc(router))
+	    if err != nil {
+		    log.Fatalln("ListenAndServe:", err)
+	    }
     }
-
-We use *web.go* framework for binding handlers to specified URLs and HTTP
-methods. URLs are specified by regular expressions.
 
 The *show* handler, binded to *GET* method and "/(.\*)" URL scheme, is
 responsible for render the main page witch allows the user to select and read
-articles. The "/(.\*)" regular expression matches any URL and returns it's path
-part as article number. So if URL looks like:
-
-    http://www.simple-go-wiki.org/19
-
-it will return "19" as an article number. If URL looks like:
-
-    http://www.simple-go-wiki.org/edit/19
-
-it will return "edit/19" as an article number. Therefore, we must bind *edit*
-handler before *show* handler. The  article number will be converted by
-*strconv.Atoi* to integer value. If it is empty string or it isn't a number it
-will be converted to 0, which means unknown article.
+articles.
 
 The *edit* handler, bound to *GET* method and "/edit/(.\*)" URL scheme, is
 responsible for edit or create new article.
@@ -518,44 +527,25 @@ only when user push the *Save* button on edit page, which is checked using
 *wr.Request.Params["submit"]* variable. After updating the database this
 handler sends the redirect response which redirects to the main page.
 
-## Building the application
+## Sun the application
 
-Lets create *Makefile* for our project:
-
-    include $(GOROOT)/src/Make.inc
-
-    TARG=wiki
-    GOFILES=\
-        view.go\
-        controller.go\
-        mysql.go\
-
-    include $(GOROOT)/src/Make.cmd
-
-Next we can build our application:
-
-    $ make
-    8g -o _go_.8 view.go controller.go mysql.go 
-    8l -o wiki _go_.8
-
-and launch it:
-
-    $ ./wiki 
-    2011/01/26 19:44:55 web.go serving 0.0.0.0:1111
+	$ go run *.go
 
 You may get this tutorial and example application from Github using the following
 command:
 
     $ git clone git://github.com/ziutek/simple_go_wiki.git
 
+os install it in your *GOPATH* using *go* command:
+
+	$ go get github.com/ziutek/simple_go_wiki
+
 ## Other frameworks
 
-There are versions of *controller.go* file for Go builtin *http* package and
+There are versions of *controller.go* file for
+[web.go](http://www.getwebgo.com/) package and
 [twister](https://github.com/garyburd/twister) package. You can find them in
-*alternative_frameworks* directory. If you want to try *twister* version, you
-need to instal *twister* server:
-
-    goinstall github.com/garyburd/twister/server
+*alternative_frameworks* directory. 
 
 ## Using Markdown to format the article body
 
@@ -590,10 +580,9 @@ directory.
 
 To build and run example wiki with *Markdown* support type:
 
-    $ goinstal github.com/knieriem/markdown
+    $ go get github.com/knieriem/markdown
     $ cd using_markdown
-    $ make
-    $ ./wiki
+    $ ./run.sh
 
 ## Exercices
 

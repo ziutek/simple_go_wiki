@@ -41,9 +41,6 @@ func update(req *web.Request) {
 }
 
 func main() {
-    viewInit()
-    mysqlInit()
-
     router := web.NewRouter().
         Register("/style.css", "GET", web.FileHandler("static/style.css", nil)).
         Register("/favicon.ico", "GET", web.FileHandler("static/favicon.ico", nil)).
@@ -52,5 +49,5 @@ func main() {
 
     handler := web.ProcessForm(10e3, false, router)
 
-    server.Run(":1111", handler)
+    server.Run(":2222", handler)
 }

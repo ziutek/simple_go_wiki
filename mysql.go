@@ -38,7 +38,7 @@ func mysqlErrExit(err error) {
 	}
 }
 
-func mysqlInit() {
+func init() {
 	var err error
 
 	// Initialisation command
