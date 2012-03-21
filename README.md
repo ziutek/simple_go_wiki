@@ -527,7 +527,7 @@ only when user push the *Save* button on edit page, which is checked using
 *wr.Request.Params["submit"]* variable. After updating the database this
 handler sends the redirect response which redirects to the main page.
 
-## Sun the application
+## Run the application
 
 	$ go run *.go
 
