@@ -188,7 +188,6 @@ Lets create *show.kt* which will be template for rendering articles:
         <p>This application was wrote entirely in Go language, using the
         following external packages:</p>
         <ul>
-            <li><a href='https://github.com/hoisie/web.go'>web.go</a></li>
             <li><a href='https://github.com/ziutek/kasia.go'>kasia.go</a></li>
             <li><a href='https://github.com/ziutek/kview'>kview</a></li>
             <li><a href='https://github.com/ziutek/mymysql'>MyMySQL</a></li>
@@ -432,11 +431,7 @@ table.
 
 ## Controller
 
-We need to install *web.go*:
-
-    $ goinstall github.com/hoisie/web.go
-
-Next we can write the last part of our application which is responsible for
+The last part of our application which is responsible for
 interaction with the user. Lets create *controller.go* file:
 
     package main
