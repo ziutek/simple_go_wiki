@@ -80,30 +80,30 @@ In the *simple_go_wiki* directory we can create our *view.go* file:
     import "github.com/ziutek/kview"
 
     // Our Wiki pages
-    var main_view, edit_view kview.View
+    var mainView, editView kview.View
 
     func init() {
         // Load layout template
         layout := kview.New("layout.kt")
 
         // Load template which shows list of articles
-        article_list := kview.New("list.kt")
+        articleList := kview.New("list.kt")
 
         // Create main page
-        main_view = layout.Copy()
-        main_view.Div("left", article_list)
-        main_view.Div("right", kview.New("show.kt"))
+        mainView = layout.Copy()
+        mainView.Div("left", articleList)
+        mainView.Div("right", kview.New("show.kt"))
 
         // Create edit page
-        edit_view = layout.Copy()
-        edit_view.Div("left", article_list)
-        edit_view.Div("right", kview.New("edit.kt"))
+        editView = layout.Copy()
+        editView.Div("left", articleList)
+        editView.Div("right", kview.New("edit.kt"))
     }
 
 As you can see, our service will consist of two pages:
 
-* *main_view* - using which the user will be able to read articles,
-* *edit_view* - using which the user will be able to create and edit articles.
+* *mainView* - using which the user will be able to read articles,
+* *editView* - using which the user will be able to create and edit articles.
 
 Both pages will consists of two columns:
 
@@ -294,19 +294,19 @@ define const and declare global variables:
     )
 
     const (
-        db_proto = "tcp"
-        db_addr  = "127.0.0.1:3306"
-        db_user  = "testuser"
-        db_pass  = "TestPasswd9"
-        db_name  = "test"
+        dbProto = "tcp"
+        dbAddr  = "127.0.0.1:3306"
+        dbUser  = "testuser"
+        dbPass  = "TestPasswd9"
+        dbName  = "test"
     )
 
     var (
         // MySQL connection handler
-        db = autorc.New(db_proto, "", db_addr, db_user, db_pass, db_name)
+        db = autorc.New(dbProto, "", dbAddr, dbUser, dbPass, dbName)
 
         // Prepared statements
-        artlist_stmt, article_stmt, update_stmt *autorc.Stmt
+        artlistStmt, articleStmt, updateStmt *autorc.Stmt
     )
 
 After declaration, the MySQL connection handler is ready for connect to the
@@ -344,15 +344,15 @@ Lets define the initialisation function.
 
         // Prepare server-side statements
 
-        artlist_stmt, err = db.Prepare("SELECT id, title FROM articles")
+        artlistStmt, err = db.Prepare("SELECT id, title FROM articles")
         mysqlErrExit(err)
 
-        article_stmt, err = db.Prepare(
+        articleStmt, err = db.Prepare(
             "SELECT title, body FROM articles WHERE id = ?",
         )
         mysqlErrExit(err)
 
-        update_stmt, err = db.Prepare(
+        updateStmt, err = db.Prepare(
             "INSERT articles (id, title, body) VALUES (?, ?, ?)" +
             " ON DUPLICATE KEY UPDATE title=VALUES(title), body=VALUES(body)",
         )
@@ -374,7 +374,7 @@ Lets write the code that will be used to get data for left column of our
 web pages. 
 
     type ArticleList struct {
-        Id, Title int
+        IS, Title int
         Articles  []mysql.Row
     }
 
@@ -382,12 +382,12 @@ web pages.
     // because it is to expensive work. Instead, we provide raw query result
     // and indexes to id and title fields.
     func getArticleList() *ArticleList {
-        rows, res, err := artlist_stmt.Exec()
+        rows, res, err := artlistStmt.Exec()
         if mysqlError(err) {
             return nil
         }
         return &ArticleList{
-            Id:       res.Map("id"),
+            ID:       res.Map("id"),
             Title:    res.Map("title"),
             Articles: rows,
         }
@@ -396,19 +396,19 @@ web pages.
 Then define functions for getting and updating articles:
 
     type Article struct {
-        Id          int
+        ID          int
         Title, Body string
     }
 
     // Get an article
     func getArticle(id int) (article *Article) {
-        rows, res, err := article_stmt.Exec(id)
+        rows, res, err := articleStmt.Exec(id)
         if mysqlError(err) {
             return
         }
         if len(rows) != 0 {
             article = &Article{
-                Id:    id,
+                ID:    id,
                 Title: rows[0].Str(res.Map("title")),
                 Body:  rows[0].Str(res.Map("body")),
             }
@@ -418,7 +418,7 @@ Then define functions for getting and updating articles:
 
     // Insert or update an article. It returns id of updated/inserted article.
     func updateArticle(id int, title, body string) int {
-            _, res, err := update_stmt.Exec(id, title, body)
+            _, res, err := updateStmt.Exec(id, title, body)
         if mysqlError(err) {
             return 0
         }
@@ -448,38 +448,38 @@ interaction with the user. Lets create *controller.go* file:
     }
 
     // Render main page
-    func show(wr http.ResponseWriter, art_num string) {
-	    id, _ := strconv.Atoi(art_num)
-	    main_view.Exec(wr, ViewCtx{getArticleList(), getArticle(id)})
+    func show(wr http.ResponseWriter, artNum string) {
+	    id, _ := strconv.Atoi(artNum)
+	    mainView.Exec(wr, ViewCtx{getArticleList(), getArticle(id)})
     }
 
     // Render edit page
-    func edit(wr http.ResponseWriter, art_num string) {
-	    id, _ := strconv.Atoi(art_num)
-	    edit_view.Exec(wr, ViewCtx{getArticleList(), getArticle(id)})
+    func edit(wr http.ResponseWriter, artNum string) {
+	    id, _ := strconv.Atoi(artNum)
+	    editView.Exec(wr, ViewCtx{getArticleList(), getArticle(id)})
     }
 
     // Update database and render main page
-    func update(wr http.ResponseWriter, req *http.Request, art_num string) {
+    func update(wr http.ResponseWriter, req *http.Request, artNum string) {
 	    if req.FormValue("submit") == "Save" {
-		    id, _ := strconv.Atoi(art_num) // id == 0 means new article
+		    id, _ := strconv.Atoi(artNum) // id == 0 means new article
 		    id = updateArticle(
 			    id, req.FormValue("title"), req.FormValue("body"),
 		    )
-		    // If we insert new article, we change art_num to its id. This allows
+		    // If we insert new article, we change artNum to its id. This allows
 		    // show the article immediately after its creation.
-		    art_num = strconv.Itoa(id)
+		    artNum = strconv.Itoa(id)
 	    }
 	    // Redirect to the main page which will show the specified article
-	    http.Redirect(wr, req, "/"+art_num, 303)
+	    http.Redirect(wr, req, "/"+artNum, 303)
 	    // We could show this article directly using show(wr, art_num)
 	    // but see: http://en.wikipedia.org/wiki/Post/Redirect/Get
     }
 
     // Decide which handler to use basis on the request method and URL path.
     func router(wr http.ResponseWriter, req *http.Request) {
-	    root_path := "/"
-	    edit_path := "/edit/"
+	    rootPath := "/"
+	    editPath := "/edit/"
 
 	    switch req.Method {
 	    case "GET":
@@ -487,17 +487,17 @@ interaction with the user. Lets create *controller.go* file:
 		    case req.URL.Path == "/style.css" || req.URL.Path == "/favicon.ico":
 			    http.ServeFile(wr, req, "static"+req.URL.Path)
 
-		    case strings.HasPrefix(req.URL.Path, edit_path):
-			    edit(wr, req.URL.Path[len(edit_path):])
+		    case strings.HasPrefix(req.URL.Path, editPath):
+			    edit(wr, req.URL.Path[len(editPath):])
     
-		    case strings.HasPrefix(req.URL.Path, root_path):
-			    show(wr, req.URL.Path[len(root_path):])
+		    case strings.HasPrefix(req.URL.Path, rootPath):
+			    show(wr, req.URL.Path[len(rootPath):])
 		    }
 
 	    case "POST":
 		    switch {
-		    case strings.HasPrefix(req.URL.Path, root_path):
-			    update(wr, req, req.URL.Path[len(root_path):])
+		    case strings.HasPrefix(req.URL.Path, rootPath):
+			    update(wr, req, req.URL.Path[len(rootPath):])
 		    }
 	    }
     }
@@ -567,7 +567,7 @@ We define *utils* map with only one utility function:
 
 and add its contents to the *globals* for the *show.kt* template:
 
-    main_view.Div("Right", kview.New("show.kt", utils))
+    mainView.Div("Right", kview.New("show.kt", utils))
 
 At last we should change `$body` to `$:markdown(body)` in the *show.kt* file.
 For details see the *viwe.go* and *templates/show.kt* files in *using_markdown*
